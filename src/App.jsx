@@ -1,8 +1,13 @@
+import { Navbar } from "./components/navbar";
+import { Footer } from "./components/footer";
+import { HomePage } from "./components/home-page";
+
 function App() {
   return (
-    <div>
-      <h1>Walk away ddocs</h1>
-      <div className="card">Coming Soon</div>
+    <div className="bg-[#F8F9FA]">
+      <Navbar />
+      <HomePage />
+      <Footer />
     </div>
   );
 }
