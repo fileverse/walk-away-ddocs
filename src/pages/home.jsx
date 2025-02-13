@@ -1,6 +1,6 @@
 import React from "react";
-import { FAQ } from "./faq";
-import { UploadSection } from "./upload-section";
+import { FAQ } from "../components/faq";
+import { UploadSection } from "../components/upload-section";
 
 const HomePage = () => {
   return (

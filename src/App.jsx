@@ -1,14 +1,19 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
-import { HomePage } from "./components/home-page";
+import { HomePage } from "./pages/home";
+import { RetrievePage } from "./pages/retrieve";
 
 function App() {
   return (
-    <div className="bg-[#F8F9FA]">
+    <Router>
       <Navbar />
-      <HomePage />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/retrieve" element={<RetrievePage />} />
+      </Routes>
       <Footer />
-    </div>
+    </Router>
   );
 }
 
