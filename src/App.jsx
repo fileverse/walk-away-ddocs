@@ -1,8 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Navbar } from "./components/navbar";
-import { Footer } from "./components/footer";
-import { HomePage } from "./pages/home";
-import { RetrievePage } from "./pages/retrieve";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Navbar } from './components/navbar';
+import { HomePage } from './pages/home';
+import { RetrievePage } from './pages/retrieve';
 
 function App() {
   return (
@@ -12,7 +11,6 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/retrieve" element={<RetrievePage />} />
       </Routes>
-      <Footer />
     </Router>
   );
 }

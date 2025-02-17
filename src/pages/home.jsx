@@ -1,12 +1,13 @@
 import React from "react";
 import { FAQ } from "../components/faq";
 import { UploadSection } from "../components/upload-section";
+import { Footer } from "../components/footer";
 
 const HomePage = () => {
   return (
     <div className="">
       {/* Main Content */}
-      <main className="max-w-3xl mx-auto p-8">
+      <main className="max-w-5xl mx-auto p-8">
         <div className="pl-5">
           <h1 className="font-helvetica font-bold text-2xl leading-10 text-[#363B3F] mb-2">
             dDocs: Zero Servers
@@ -46,6 +47,7 @@ const HomePage = () => {
         {/* FAQ Section */}
         <FAQ />
       </main>
+      <Footer />
     </div>
   );
 };

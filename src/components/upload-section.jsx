@@ -141,7 +141,7 @@ const UploadSection = () => {
 
       <div className="px-0 py-10 max-w-[960px] bg-white rounded-b-xl">
             <div className="py-0 px-6">
-              <h2 className="font-helvetica font-medium text-sm leading-5 text-[#363B3F] mb-4">
+              <h2 className="font-helvetica font-medium text-sm leading-5 text-[#363B3F] mb-2">
                 Upload your encryption key
               </h2>
 
@@ -168,7 +168,7 @@ const UploadSection = () => {
                   in this area or{" "}
                   <button
                     onClick={onButtonClick}
-                    className="text-blue-500 hover:underline cursor-pointer"
+                    className="text-[#5C0AFF] hover:underline cursor-pointer"
                   >
                     Browse
                   </button>
@@ -195,7 +195,7 @@ const UploadSection = () => {
                 </div>
               )}
 
-              <div className="mt-2">
+              <div className="mt-2 mb-2">
                 <button
                   onClick={() => setShowKeyHelp(!showKeyHelp)}
                   className="font-helvetica font-normal text-[14px] leading-5 text-[#77818A] hover:text-gray-600 underline cursor-pointer flex items-center gap-1"
