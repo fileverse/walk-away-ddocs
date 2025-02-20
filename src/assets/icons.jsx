@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 export function ThreadIcon() {
   return (
@@ -14,7 +14,7 @@ export function ThreadIcon() {
         fill="#363B3F"
       />
     </svg>
-  );
+  )
 }
 
 export function GithubIcon() {
@@ -33,7 +33,7 @@ export function GithubIcon() {
         fill="#363B3F"
       />
     </svg>
-  );
+  )
 }
 
 export function DdocsIcon() {
@@ -64,7 +64,7 @@ export function DdocsIcon() {
         </clipPath>
       </defs>
     </svg>
-  );
+  )
 }
 
 export function FileIcon() {
@@ -91,7 +91,7 @@ export function FileIcon() {
         fill="#77818A"
       />
     </svg>
-  );
+  )
 }
 
 export function CloseIcon() {
@@ -108,7 +108,7 @@ export function CloseIcon() {
         fill="#77818A"
       />
     </svg>
-  );
+  )
 }
 
 export function ChevronGreyIcon() {
@@ -127,7 +127,7 @@ export function ChevronGreyIcon() {
         fill="#77818A"
       />
     </svg>
-  );
+  )
 }
 
 export function RetryIcon() {
@@ -144,7 +144,7 @@ export function RetryIcon() {
         fill="#77818A"
       />
     </svg>
-  );
+  )
 }
 
 export function PdfIcon() {
@@ -177,7 +177,7 @@ export function PdfIcon() {
         fill="white"
       />
     </svg>
-  );
+  )
 }
 
 export function MdIcon() {
@@ -206,5 +206,5 @@ export function MdIcon() {
         fill="#363B3F"
       />
     </svg>
-  );
+  )
 }

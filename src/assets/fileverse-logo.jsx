@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 export default function FileverseLogo() {
   return (
@@ -63,5 +63,5 @@ export default function FileverseLogo() {
         />
       </defs>
     </svg>
-  );
+  )
 }

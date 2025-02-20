@@ -1,7 +1,6 @@
-import React from "react";
-import { FAQ } from "../components/faq";
-import { UploadSection } from "../components/upload-section";
-import { Footer } from "../components/footer";
+import { FAQ } from '../components/faq'
+import { UploadSection } from '../components/upload-section'
+import { Footer } from '../components/footer'
 
 const HomePage = () => {
   return (
@@ -30,7 +29,7 @@ const HomePage = () => {
             neque, at posuere risus nisi at justo. Phasellus vitae lectus sed
             libero mollis fringilla non eget leo. Nunc dapibus, nisi sit amet
             sagittis euismod, urna elit rutrum massa, sed scelerisque leo ex vel
-            dui. 
+            dui.
           </p>
           <p className="font-helvetica font-normal text-[16px] leading-6 text-[#77818A]">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
@@ -40,7 +39,7 @@ const HomePage = () => {
             neque, at posuere risus nisi at justo. Phasellus vitae lectus sed
             libero mollis fringilla non eget leo. Nunc dapibus, nisi sit amet
             sagittis euismod, urna elit rutrum massa, sed scelerisque leo ex vel
-            dui. 
+            dui.
           </p>
         </div>
 
@@ -49,7 +48,7 @@ const HomePage = () => {
       </main>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export { HomePage };
+export { HomePage }

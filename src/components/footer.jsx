@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 const Footer = () => {
   return (
@@ -14,7 +14,7 @@ const Footer = () => {
           >
             Acceptable Use
           </a>
-          {" | "}
+          {' | '}
           <a
             href="https://docs.fileverse.io/tos"
             target="_blank"
@@ -23,7 +23,7 @@ const Footer = () => {
           >
             Terms
           </a>
-          {" | "}
+          {' | '}
           <a
             href="https://docs.fileverse.io/privacy-policy"
             target="_blank"
@@ -35,7 +35,7 @@ const Footer = () => {
         </span>
       </div>
     </>
-  );
-};
+  )
+}
 
-export { Footer };
+export { Footer }

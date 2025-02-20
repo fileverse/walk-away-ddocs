@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const ChevronIcon = () => {
   return (
@@ -15,7 +15,7 @@ const ChevronIcon = () => {
         d="M19 9l-7 7-7-7"
       />
     </svg>
-  );
-};
+  )
+}
 
-export default ChevronIcon; 
+export default ChevronIcon

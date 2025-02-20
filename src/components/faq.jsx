@@ -1,10 +1,10 @@
-import { useState } from "react";
-import ChevronIcon from "../assets/chevron-icon";
+import { useState } from 'react'
+import ChevronIcon from '../assets/chevron-icon'
 
 /** @type {{ question: string, answer: import('react').ReactNode }[]} */
 const agentFaqs = [
   {
-    question: "Where i can get my encryption key?",
+    question: 'Where i can get my encryption key?',
     answer: (
       <>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
@@ -20,17 +20,17 @@ const agentFaqs = [
     ),
   },
   {
-    question: "What motivated Fileverse to build this search engine?",
+    question: 'What motivated Fileverse to build this search engine?',
     answer: (
       <>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
       </>
     ),
   },
-];
+]
 
 const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(null)
 
   return (
     <div className="w-full py-8 px-3">
@@ -43,7 +43,7 @@ const FAQ = () => {
           <div
             key={index}
             className={`border-b border-gray-200 ${
-              index === 0 ? "border-t" : ""
+              index === 0 ? 'border-t' : ''
             }`}
           >
             <button
@@ -55,7 +55,7 @@ const FAQ = () => {
               </span>
               <div
                 className={`transform transition-transform ${
-                  openIndex === index ? "rotate-180" : ""
+                  openIndex === index ? 'rotate-180' : ''
                 }`}
               >
                 <ChevronIcon />
@@ -71,7 +71,7 @@ const FAQ = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export { FAQ };
+export { FAQ }

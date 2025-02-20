@@ -1,5 +1,5 @@
-import FileverseIcon from '../assets/fileverse.svg';
-import { GithubIcon, ThreadIcon, DdocsIcon } from '../assets/icons';
+import FileverseIcon from '../assets/fileverse.svg'
+import { GithubIcon, ThreadIcon, DdocsIcon } from '../assets/icons'
 
 const Navbar = () => {
   return (
@@ -32,7 +32,7 @@ const Navbar = () => {
         </a>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export { Navbar };
+export { Navbar }

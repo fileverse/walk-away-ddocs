@@ -1,51 +1,100 @@
-import React, { useState } from 'react';
-import { DdocsIcon, PdfIcon, MdIcon } from '../assets/icons';
-// import '@fileverse-dev/ddoc/styles';
+import { useEffect, useState, useRef } from 'react'
+import { DdocsIcon, PdfIcon, MdIcon } from '../assets/icons'
+import { decryptTitle, decryptUsingRSAKey, decryptFile } from '../utils/crypto'
+import { getIPFSAsset } from '../utils/ipfs-utils'
+import { getContractFile } from '../utils/contract-functions'
+import { usePortalProvider } from '../providers/portal-provider'
+import { useNavigate } from 'react-router-dom'
+import { PreviewDdocEditor, handleContentPrint } from '@fileverse-dev/ddoc'
 
 const Skeleton = ({ className = '' }) => {
   return (
     <div
       className={`animate-pulse bg-gradient-to-r from-[#F8F9FA] to-[#E6E6E6] rounded-[4px] ${className}`}
     />
-  );
-};
+  )
+}
 
 const RetrieveSection = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate()
 
-  // Simulate loading
-  React.useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-  }, []);
+  const { portalInformation } = usePortalProvider()
+  const [isLoading, setIsLoading] = useState(false)
+  const [isError, setIsError] = useState('')
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <div className="w-full max-w-[1312px] bg-white rounded-[12px]">
-          <div className="flex">
-            {/* Left side - Status and file info */}
-            <div className="flex flex-col items-start gap-3 border-r border-[#E8EBEC] w-[328px] max-w-[400px] rounded-l-[12px] pt-3 px-4">
-              <div className="bg-[#F8F9FA] w-full flex items-center justify-center rounded-[4px] p-2 font-helvetica font-medium text-[14px] leading-[20px] text-[#363B3F]">
-                Retrieving your documents
-              </div>
-              <div className="flex gap-2 items-center justify-center">
-                <div>
-                  <Skeleton className="h-5 w-5" />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div>
-                    <Skeleton className="h-6 w-[200px]" />
-                  </div>
-                  <div>
-                    <Skeleton className="h-3 w-[100px]" />
-                  </div>
-                </div>
-              </div>
+  const [content, setContent] = useState('')
+  const [contentData, setContentData] = useState({
+    contentHash: '',
+    fileKey: {},
+  })
+
+  useEffect(() => {
+    if (!portalInformation.ownerPrivateKey) {
+      navigate('/')
+    }
+  }, [portalInformation])
+
+  const fetchContent = async (contentData) => {
+    try {
+      setIsError('')
+      setIsLoading(true)
+      const response = await decryptFile(
+        contentData.fileKey,
+        contentData.contentHash
+      )
+      setContent(response.file)
+    } catch (error) {
+      setIsError(error?.message || 'Failed to Fetch content')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const editorRef = useRef(null)
+
+  const exportPdf = () => {
+    if (!content || !editorRef.current) return
+    handleContentPrint(editorRef.current.getEditor().getHTML())
+  }
+
+  const exportMd = () => {
+    if (!editorRef.current) return
+    editorRef.current.exportContentAsMarkDown(contentData.contentHash + '.md')
+  }
+
+  const style = async () => {
+    return await import('@fileverse-dev/ddoc/styles')
+  }
+
+  useEffect(() => {
+    if (!contentData.contentHash) return
+    fetchContent(contentData)
+  }, [contentData.contentHash])
+
+  return (
+    <div className="flex items-center justify-center p-4">
+      <div className="w-full max-w-[1312px] bg-white rounded-[12px]">
+        <div className="flex">
+          {/* Loaded state left sidebar */}
+          <div className="flex flex-col items-start border-r border-gray-200 p-4 h-[calc(100vh-120px)] overflow-y-auto">
+            <div className="font-helvetica text-[12px] leading-[16px] font-normal text-[#77818A]">
+              Documents: {portalInformation.fileCount}
             </div>
+            <div className="w-[280px] flex flex-col gap-2 pt-2">
+              {Array(portalInformation.fileCount)
+                .fill(0)
+                .map((_, index) => (
+                  <DdocFile
+                    key={index}
+                    fileId={index}
+                    contentData={contentData}
+                    setContentData={setContentData}
+                  />
+                ))}
+            </div>
+          </div>
 
-            {/* Right side - Document list */}
+          {!content || isLoading ? (
             <div className="flex-1">
               <div className="flex justify-between items-center border-b border-[#E8EBEC] mb-4 p-[16px_24px_16px_16px] h-[60px]">
                 <div>
@@ -77,85 +126,127 @@ const RetrieveSection = () => {
                   ))}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center justify-center p-4">
-      <div className="w-full max-w-[1312px] bg-white rounded-[12px]">
-        <div className="flex">
-          {/* Loaded state left sidebar */}
-          <div className="flex flex-col items-start border-r border-gray-200 p-4 h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden">
-            <div className="font-helvetica text-[12px] leading-[16px] font-normal text-[#77818A]">
-                Documents: 9
-              </div>
-            <div className="w-[280px] flex flex-col gap-2">
-              {Array(19)
-                .fill(0)
-                .map((_, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-3 p-2 hover:bg-[#F8F9FA] rounded-[4px] cursor-pointer"
-                  >
-                  <div className="w-5 h-5 bg-[#FFE5B3] rounded-[4px] flex items-center justify-center">
-                      <DdocsIcon />
-                  </div>
-                  <div className="flex-1">
-                      <div className="font-helvetica font-medium text-[14px] leading-[20px] text-[#363B3F]">
-                        Privacy_document
-                      </div>
-                      <div className="font-helvetica font-normal text-[12px] leading-[16px] text-[#77818A]">
-                        Last edit 11.07.2024 17:30
-                      </div>
-                  </div>
+          ) : (
+            <div className="flex-1">
+              <div className="flex justify-between items-center py-3 px-3 border-b border-gray-200">
+                <div className="font-helvetica font-medium text-[14px] leading-[20px] text-[#363B3F]">
+                  IPFS hash: {contentData?.contentHash}
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Loaded state main content */}
-          <div className="flex-1">
-            <div className="flex justify-between items-center py-3 px-3 border-b border-gray-200">
-              <div className="font-helvetica font-medium text-[14px] leading-[20px] text-[#363B3F]">
-                Privacy and Decentralization in the Digital Age
+                <div className="flex">
+                  <button className="p-2 hover:bg-[#F8F9FA] rounded-[4px]">
+                    <span className="text-[14px] text-[#6C757D]">
+                      Download as:
+                    </span>
+                  </button>
+                  <button
+                    onClick={exportPdf}
+                    className="p-2 hover:bg-[#F8F9FA] rounded-[4px]"
+                  >
+                    <PdfIcon />
+                  </button>
+                  <button
+                    onClick={exportMd}
+                    className="p-2 hover:bg-[#F8F9FA] rounded-[4px]"
+                  >
+                    <MdIcon />
+                  </button>
+                </div>
               </div>
-              <div className="flex">
-                <button className="p-2 hover:bg-[#F8F9FA] rounded-[4px]">
-                  <span className="text-[14px] text-[#6C757D]">
-                    Download as:
-                  </span>
-                </button>
-                <button className="p-2 hover:bg-[#F8F9FA] rounded-[4px]">
-                  <PdfIcon />
-                </button>
-                <button className="p-2 hover:bg-[#F8F9FA] rounded-[4px]">
-                  <MdIcon />
-                </button>
-              </div>
+              {isError ? (
+                <div className="flex flex-col h-full w-full justify-center items-center">
+                  <p>Error occurred</p>
+                  <p>
+                    {isError} Please{' '}
+                    <span
+                      className="hover:underline cursor-pointer text-blue-500 "
+                      onClick={() => fetchContent(contentData)}
+                    >
+                      retry
+                    </span>
+                  </p>
+                </div>
+              ) : (
+                <div className="p-6 overflow-y-auto h-[calc(100vh-180px)] scrollbar-hide">
+                  <PreviewDdocEditor
+                    className={`${style()}`}
+                    ref={editorRef}
+                    initialContent={content}
+                    isPreviewMode={true}
+                    unFocused
+                  />
+                </div>
+              )}
             </div>
-            <div className="p-6">
-              <h1 className="text-2xl font-bold mb-4">Privacy and Decentralization</h1>
-              <p className="mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
-              <h2 className="text-xl font-bold mb-3">Key Points</h2>
-              <ul className="list-disc pl-5 mb-4">
-                <li>Data Privacy in Web3</li>
-                <li>Decentralized Storage Solutions</li>
-                <li>User Control and Ownership</li>
-              </ul>
-              <p className="mb-4">
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export { RetrieveSection };
+export { RetrieveSection }
+
+export const DdocFile = ({ fileId, setContentData, contentData }) => {
+  const { portalInformation } = usePortalProvider()
+  const { ownerPrivateKey, portalAddress } = portalInformation
+  const [isDeleted, setIsDeleted] = useState(false)
+  const [title, setDocTitle] = useState('')
+  const [data, setData] = useState()
+
+  const loadFileDetails = async () => {
+    const details = await getContractFile(fileId, portalAddress)
+
+    if (!details.contentHash || !details.metadataHash)
+      throw new Error('metadata or content is empty')
+    const response = await getIPFSAsset({ ipfsHash: details.metadataHash })
+    const metadata = response?.data
+    if (metadata?.isDeleted) {
+      setIsDeleted(true)
+      return
+    }
+
+    const encryptedFileKey = metadata.ownerLock.lockedFileKey
+
+    const _fileKey = await decryptUsingRSAKey(encryptedFileKey, ownerPrivateKey)
+
+    if (!_fileKey) throw new Error('Failed to open file key')
+    const titleInMetadata = metadata?.title
+    const textDecoder = new TextDecoder()
+    const fileKey = JSON.parse(textDecoder.decode(_fileKey))
+    const title = await decryptTitle(
+      titleInMetadata,
+      fileKey,
+      ownerPrivateKey,
+      metadata.archVersion
+    )
+    setDocTitle(title)
+
+    if (fileId === 0) {
+      setContentData({ fileKey, contentHash: details.contentHash })
+    }
+
+    setData({ fileKey, contentHash: details.contentHash })
+  }
+  useEffect(() => {
+    loadFileDetails()
+  }, [])
+  return (
+    <div
+      onClick={() => {
+        if (!data) return
+        setContentData(data)
+      }}
+      className={`flex items-center gap-3 p-2 hover:bg-[#F8F9FA] ${contentData.contentHash === data?.contentHash && 'bg-[#F8F9FA]'} rounded-[4px] cursor-pointer`}
+    >
+      <div className="w-5 h-5 bg-[#FFE5B3] rounded-[4px] flex items-center justify-center">
+        <DdocsIcon />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="font-helvetica font-medium text-[14px] leading-[20px] text-[#363B3F] truncate">
+          {title}
+        </div>
+      </div>
+    </div>
+  )
+}
+//11.07.2024 17:30
