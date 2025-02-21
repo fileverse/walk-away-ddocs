@@ -16,6 +16,7 @@ const PortalProvider = ({ children }) => {
     fileCount: 0,
     portalAddress: '',
     ownerPrivateKey: '',
+    smartAccountClient: null,
   })
   return (
     <PortalProviderContext.Provider

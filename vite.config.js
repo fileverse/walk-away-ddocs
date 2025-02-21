@@ -21,6 +21,6 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    exclude: ['@transcend-io/penumbra'], // Ensure it's included
+    exclude: ['@transcend-io/penumbra'],
   },
 })

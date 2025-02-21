@@ -10,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/:portalAddress/retrieve" element={<RetrievePage />} />
+        <Route path="/:portalAddress/edit" element={<RetrievePage />} />
       </Routes>
     </>
   )
