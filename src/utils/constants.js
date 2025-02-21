@@ -13,9 +13,14 @@ const VIEM_CHAIN_MAP = {
   gnosis: gnosis,
 }
 
+// user operation recipt takes long time to resolve hence the long timeout
+export const RECEIPT_WAIT_TIMEOUT = 30000 // 30 seconds
+
 export const NETWORK_NAME = import.meta.env.VITE_NETWORK_NAME
 
 export const RPC_URL = import.meta.env.VITE_NETWORK_RPC?.split(', ')
+export const UPLOAD_API_URL =
+  import.meta.env.VITE_PUBLIC_STORAGE_BACKEND + '/upload/public'
 
 export const CHAIN = VIEM_CHAIN_MAP[NETWORK_NAME]
 const PIMLICO_API_KEY = import.meta.env.VITE_PUBLIC_PIMLICO_API_KEY

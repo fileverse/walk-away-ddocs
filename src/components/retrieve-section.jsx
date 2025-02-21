@@ -105,14 +105,19 @@ const RetrieveSection = () => {
     const smartAccountClient = await getSmartAccountClient(
       formData.signedMessage
     )
-    if (smartAccountClient.account !== portalInformation.owner) {
-      setAccountError(
-        smartAccountClient.account + ' is not the owner of this account'
-      )
-      return
-    }
-    setPortalInformation((prev) => ({ ...prev, smartAccountClient }))
-    navigate('/' + portalInformation.portalAddress + '/edit/' + formData.fileId)
+    // if (smartAccountClient.account.address !== portalInformation.owner) {
+    //   setAccountError(
+    //     smartAccountClient.account + ' is not the owner of this account'
+    //   )
+    //   return
+    // }
+    setPortalInformation((prev) => ({
+      ...prev,
+      fileId: formData.fileId,
+      smartAccountClient,
+      linkKey: formData.linkKey,
+    }))
+    navigate('/' + portalInformation.portalAddress + '/edit')
   }
 
   return (
