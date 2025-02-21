@@ -3,7 +3,7 @@ import { GithubIcon, ThreadIcon, DdocsIcon } from '../assets/icons'
 
 const Navbar = () => {
   return (
-    <nav className="flex h-[10vh] justify-between items-center px-6 py-3 border-[#E8EBEC]">
+    <nav className="flex justify-between items-center px-6 py-3 border-[#E8EBEC]">
       <div className="flex items-center">
         <img src={FileverseIcon} alt="Fileverse" />
       </div>

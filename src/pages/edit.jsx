@@ -7,6 +7,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { getSmartAccountClientFromAccount } from '../utils/get-smart-account-from-account'
 import { toHex } from 'viem'
 import { toUint8Array } from 'js-base64'
+import FileverseIcon from '../assets/fileverse.svg'
 import tweetnacl from 'tweetnacl'
 import {
   encryptFile,
@@ -90,6 +91,7 @@ export const EditPage = () => {
           contractAddress: portalInformation.portalAddress,
           invoker: invokerAddress,
           editSecret: '',
+          apiKey: portalInformation.apiKey,
         })
 
       await editFileTransaction(portalInformation.smartAccountClient, {
@@ -229,23 +231,29 @@ export const EditPage = () => {
       smartAccountClient,
       linkKey: formData.linkKey,
       portalAddress: formData.portalAddress,
-      apiKey: formData.portalAddress,
+      apiKey: formData.apiKey,
     }))
   }
 
   return (
     <>
+      <nav className="flex justify-between items-center px-6 py-3 border-[#E8EBEC]">
+        <div className="flex items-center">
+          <img src={FileverseIcon} alt="Fileverse" />
+        </div>
+
+        <div className="flex items-center gap-1">
+          <button
+            disabled={isLoading}
+            onClick={publishDoc}
+            className="px-4 py-2 bg-black text-white rounded-md"
+          >
+            {isLoading ? 'Loading' : 'Publish'}
+          </button>
+        </div>
+      </nav>
       {portalInformation.smartAccountClient ? (
         <div className="w-full">
-          <div className="w-full flex px-8 justify-end">
-            <button
-              disabled={isLoading}
-              onClick={publishDoc}
-              className="px-4 py-2 bg-black text-white rounded-md"
-            >
-              {isLoading ? 'Loading' : 'Publish'}
-            </button>
-          </div>
           <DdocEditor
             ref={editorRef}
             initialContent={initialContent}

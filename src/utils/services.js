@@ -8,7 +8,7 @@ export const uploadFileRequest = async (request) => {
   const response = await fetch(UPLOAD_API_URL, {
     method: 'POST',
     headers: {
-      'x-api-key': 'test-walk-away-ui',
+      'x-api-key': request.apiKey,
     },
     body: body,
   })

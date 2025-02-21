@@ -6,16 +6,17 @@ import { EditPage } from './pages/edit'
 
 function App() {
   return (
-    <div className="h-[100vh]">
-      <Navbar />
-      <div className="h-[90vh]">
+    <>
+      {window.location.hash !== '#/override' && <Navbar />}
+
+      <div>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/:portalAddress/retrieve" element={<RetrievePage />} />
-          <Route path="/edit" element={<EditPage />} />
+          <Route path="/override" element={<EditPage />} />
         </Routes>
       </div>
-    </div>
+    </>
   )
 }
 

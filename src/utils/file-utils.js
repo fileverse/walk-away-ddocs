@@ -98,8 +98,14 @@ export const generateFileMetadata = async (
 }
 
 export const uploadContentAndMetadataFile = async (contentPayload) => {
-  const { contractAddress, invoker, contentFile, metadataFile, editSecret } =
-    contentPayload
+  const {
+    contractAddress,
+    invoker,
+    contentFile,
+    metadataFile,
+    editSecret,
+    apiKey,
+  } = contentPayload
 
   const contentUploadRequest = {
     editSecret,
@@ -107,6 +113,7 @@ export const uploadContentAndMetadataFile = async (contentPayload) => {
     name: contentFile.name,
     contractAddress,
     invoker,
+    apiKey,
   }
   const metadataUploadRequest = {
     editSecret,
@@ -114,6 +121,7 @@ export const uploadContentAndMetadataFile = async (contentPayload) => {
     name: metadataFile.name,
     contractAddress,
     invoker,
+    apiKey,
   }
 
   const [contentResponse, metadataResponse] = await Promise.all([
