@@ -216,7 +216,6 @@ export const DdocFile = ({ fileId, setContentData, contentData }) => {
     const title = await decryptTitle(
       titleInMetadata,
       fileKey,
-      ownerPrivateKey,
       metadata.archVersion
     )
     setDocTitle(title)

@@ -96,12 +96,7 @@ export const getDecrytedString = (encryptedString, nonce, secretKey) => {
 
   return decryptedValue
 }
-export const decryptTitle = async (
-  encryptedTitle,
-  fileKey,
-  ownerPrivateKey,
-  archVersion
-) => {
+export const decryptTitle = async (encryptedTitle, fileKey, archVersion) => {
   if (archVersion === ARCH_VERSION)
     return decryptTitleWithFileKey(encryptedTitle, fileKey)
   return encryptedTitle

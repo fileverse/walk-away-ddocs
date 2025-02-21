@@ -6,14 +6,14 @@ import hkdf from 'futoin-hkdf'
 import { privateKeyToAccount } from 'viem/accounts'
 import { getSmartAccountClientFromAccount } from '../utils/get-smart-account-from-account'
 import { toHex } from 'viem'
-import { toUint8Array } from 'js-base64'
+import { toUint8Array, isValid } from 'js-base64'
 import FileverseIcon from '../assets/fileverse.svg'
 import tweetnacl from 'tweetnacl'
 import {
   encryptFile,
   decryptSecretKey,
   decryptFile,
-  getDecrytedString,
+  decryptTitle,
 } from '../utils/crypto'
 import { editFileTransaction } from '../utils/contract-functions'
 import {
@@ -154,13 +154,15 @@ export const EditPage = () => {
         )
 
         const titleInMetadata = metadata?.title
-        const textDecoder = new TextDecoder()
 
-        const title = getDecrytedString(
-          titleInMetadata,
-          metadata.nonce,
-          secretKey
-        )
+        const title = isValid(titleInMetadata)
+          ? await decryptTitle(
+              titleInMetadata,
+              { key, iv, authTag },
+              metadata.archVersion
+            )
+          : titleInMetadata
+        const textDecoder = new TextDecoder()
 
         const { cipherText: lockedChatKey, nonce: chatKeyNonce } =
           getNonceAndCipherText(metadata.linkLock.lockedChatKey, metadata.nonce)
