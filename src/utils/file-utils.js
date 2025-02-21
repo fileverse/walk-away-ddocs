@@ -94,6 +94,7 @@ export const generateFileMetadata = async (
     nonce,
     owner: invokerAddress,
     version,
+    override: true,
   }
 }
 

@@ -109,74 +109,91 @@ export const EditPage = () => {
   }
 
   const loadFileData = async () => {
-    try {
-      setIsLoading(true)
-      const details = await getContractFile(
-        portalInformation.fileId,
-        portalInformation.portalAddress
-      )
-      if (!details.contentHash || !details.metadataHash)
-        throw new Error('metadata or content is empty')
+    let attempts = 0
+    const maxRetries = 3
 
-      const response = await getIPFSAsset({ ipfsHash: details.metadataHash })
-      const metadata = response?.data
+    while (attempts < maxRetries) {
+      try {
+        setIsLoading(true)
 
-      const secretKey = await decryptSecretKey(
-        metadata.ddocId,
-        metadata.nonce,
-        portalInformation.linkKey
-      )
+        const details = await getContractFile(
+          portalInformation.fileId,
+          portalInformation.portalAddress
+        )
 
-      const { cipherText: lockedFileKey, nonce: fileKeyNonce } =
-        getNonceAndCipherText(metadata.linkLock.lockedFileKey, metadata.nonce)
+        if (!details.contentHash || !details.metadataHash) {
+          throw new Error('metadata or content is empty')
+        }
 
-      const fileKey = tweetnacl.secretbox.open(
-        toUint8Array(lockedFileKey),
-        toUint8Array(fileKeyNonce),
-        secretKey
-      )
+        const response = await getIPFSAsset({ ipfsHash: details.metadataHash })
+        const metadata = response?.data
 
-      if (!fileKey) throw new Error('Failed to open file key')
+        const secretKey = await decryptSecretKey(
+          metadata.ddocId,
+          metadata.nonce,
+          portalInformation.linkKey
+        )
 
-      const decodedFileKey = new TextDecoder().decode(fileKey)
-      const { key, iv, authTag } = JSON.parse(decodedFileKey)
+        const { cipherText: lockedFileKey, nonce: fileKeyNonce } =
+          getNonceAndCipherText(metadata.linkLock.lockedFileKey, metadata.nonce)
 
-      const result = await decryptFile(
-        { key, iv, authTag },
-        details.contentHash
-      )
-      const titleInMetadata = metadata?.title
-      const textDecoder = new TextDecoder()
+        const fileKey = tweetnacl.secretbox.open(
+          toUint8Array(lockedFileKey),
+          toUint8Array(fileKeyNonce),
+          secretKey
+        )
 
-      const title = getDecrytedString(
-        titleInMetadata,
-        metadata.nonce,
-        secretKey
-      )
+        if (!fileKey) throw new Error('Failed to open file key')
 
-      const { cipherText: lockedChatKey, nonce: chatKeyNonce } =
-        getNonceAndCipherText(metadata.linkLock.lockedChatKey, metadata.nonce)
+        const decodedFileKey = new TextDecoder().decode(fileKey)
+        const { key, iv, authTag } = JSON.parse(decodedFileKey)
 
-      const commentKey = tweetnacl.secretbox.open(
-        toUint8Array(lockedChatKey),
-        toUint8Array(chatKeyNonce),
-        secretKey
-      )
+        const result = await decryptFile(
+          { key, iv, authTag },
+          details.contentHash
+        )
 
-      setInitalContent(result.file)
-      setFileData((prev) => ({
-        ...prev,
-        title,
-        ddocId: metadata.ddocId,
-        commentKey: JSON.parse(textDecoder.decode(commentKey)),
-        nonce: metadata.nonce,
-        version: metadata.version,
-        metadata,
-      }))
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsLoading(false)
+        const titleInMetadata = metadata?.title
+        const textDecoder = new TextDecoder()
+
+        const title = getDecrytedString(
+          titleInMetadata,
+          metadata.nonce,
+          secretKey
+        )
+
+        const { cipherText: lockedChatKey, nonce: chatKeyNonce } =
+          getNonceAndCipherText(metadata.linkLock.lockedChatKey, metadata.nonce)
+
+        const commentKey = tweetnacl.secretbox.open(
+          toUint8Array(lockedChatKey),
+          toUint8Array(chatKeyNonce),
+          secretKey
+        )
+
+        setInitalContent(result.file)
+        setFileData((prev) => ({
+          ...prev,
+          title,
+          ddocId: metadata.ddocId,
+          commentKey: JSON.parse(textDecoder.decode(commentKey)),
+          nonce: metadata.nonce,
+          version: metadata.version,
+          metadata,
+        }))
+
+        return // Exit loop if successful
+      } catch (error) {
+        attempts++
+        console.log(`Attempt ${attempts} failed:`, error)
+        if (attempts >= maxRetries) {
+          console.log('Max retry attempts reached. Failing operation.')
+        } else {
+          await new Promise((resolve) => setTimeout(resolve, 1000)) // Wait 1 second before retrying
+        }
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
