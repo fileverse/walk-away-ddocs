@@ -45,6 +45,7 @@ export const EditPage = () => {
     title: '',
     version: '',
     metadata: {},
+    shouldEncryptTitle: false,
   })
   const publishDoc = async () => {
     if (!portalInformation.smartAccountClient) return
@@ -78,7 +79,8 @@ export const EditPage = () => {
         invokerAddress,
         version,
         title,
-        ddocId
+        ddocId,
+        fileData.shouldEncryptTitle
       )
 
       const { contentIpfsHash, metadataIpfsHash } =
@@ -155,6 +157,8 @@ export const EditPage = () => {
 
         const titleInMetadata = metadata?.title
 
+        const shouldEncryptTitle = isValid(titleInMetadata)
+
         const title = isValid(titleInMetadata)
           ? await decryptTitle(
               titleInMetadata,
@@ -182,6 +186,7 @@ export const EditPage = () => {
           nonce: metadata.nonce,
           version: metadata.version,
           metadata,
+          shouldEncryptTitle,
         }))
 
         return // Exit loop if successful

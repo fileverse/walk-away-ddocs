@@ -67,7 +67,8 @@ export const generateFileMetadata = async (
   invokerAddress,
   version,
   title,
-  ddocId
+  ddocId,
+  shouldEncryptTitle
 ) => {
   const dataKeyMaterial = {
     fileKey,
@@ -81,10 +82,12 @@ export const generateFileMetadata = async (
   const titleBytes = new TextEncoder().encode(title)
 
   return {
-    title: fromUint8Array(
-      tweetnacl.secretbox(titleBytes, toUint8Array(nonce), secretKey),
-      true
-    ),
+    title: shouldEncryptTitle
+      ? fromUint8Array(
+          tweetnacl.secretbox(titleBytes, toUint8Array(nonce), secretKey),
+          true
+        )
+      : title,
     size: file.size,
     mimeType: 'application/json',
     portalLock,
