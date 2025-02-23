@@ -77,7 +77,7 @@ const RetrieveSection = () => {
         <div className="flex">
           {/* Loaded state left sidebar */}
           <div className="flex flex-col items-start border-r border-gray-200 p-4 h-[calc(100vh-120px)] overflow-y-auto">
-            <div className="font-helvetica text-[12px] leading-[16px] font-normal text-[#77818A]">
+            <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
               Documents: {portalInformation.fileCount}
             </div>
             <div className="w-[280px] flex flex-col gap-2 pt-2">
@@ -129,7 +129,7 @@ const RetrieveSection = () => {
           ) : (
             <div className="flex-1">
               <div className="flex justify-between items-center py-3 px-3 border-b border-gray-200">
-                <div className="font-helvetica font-medium text-[14px] leading-[20px] text-[#363B3F]">
+                <div className="font-medium text-[14px] leading-[20px] text-[#363B3F]">
                   IPFS hash: {contentData?.contentHash}
                 </div>
                 <div className="flex">
@@ -242,7 +242,7 @@ export const DdocFile = ({ fileId, setContentData, contentData }) => {
         <DdocsIcon />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="font-helvetica font-medium text-[14px] leading-[20px] text-[#363B3F] truncate">
+        <div className="font-medium text-[14px] leading-[20px] text-[#363B3F] truncate">
           {title}
         </div>
       </div>
