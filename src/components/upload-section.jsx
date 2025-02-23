@@ -94,13 +94,6 @@ const UploadSection = () => {
 
   return (
     <div className="mb-8">
-      <div className="flex items-start p-2 sm:p-3 bg-[#FFDF0A] rounded-t-xl">
-        <p className="font-helvetica font-normal text-sm leading-5 text-[#363B3F]">
-          Open source. Check a core code in our{' '}
-          <span className="underline"> Github</span>
-        </p>
-      </div>
-
       <div className="px-0 py-10 max-w-[960px] bg-white rounded-b-xl">
         <div className="py-0 px-6">
           <h2 className="font-helvetica font-medium text-sm leading-5 text-[#363B3F] mb-2">
@@ -172,8 +165,8 @@ const UploadSection = () => {
 
             {showKeyHelp && (
               <div className="mt-2 font-helvetica text-[14px] leading-[20px] text-[#77818A] font-normal">
-                Just open your account settings on dDocs (at top right corner)
-                and download a backup key as .JSON file.
+                Just open your account settings on dDocs on the sidebar and
+                download keys
               </div>
             )}
           </div>

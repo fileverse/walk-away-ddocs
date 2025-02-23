@@ -20,6 +20,10 @@ const HomePage = () => {
         {/* Upload Section */}
         <UploadSection />
 
+        <div className="w-[912px] text-[#363b3f] text-xl mb-4 font-bold font-['Helvetica Neue'] leading-7">
+          Heading
+        </div>
+
         <div className="pb-2">
           <p className="font-helvetica font-normal text-[16px] leading-6 text-[#77818A] pb-3">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
