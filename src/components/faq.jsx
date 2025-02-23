@@ -68,10 +68,10 @@ const agentFaqs = [
     ),
   },
   {
-    question: 'What happens if I don’t download my dDocs Backup Keys?',
+    question: "What happens if I don't download my dDocs Backup Keys?",
     answer: (
       <>
-        Without your dDocs Backup Keys, you won’t be able to decrypt and
+        Without your dDocs Backup Keys, you won&apos;t be able to decrypt and
         retrieve your documents. We highly recommend downloading them in advance
         from your account settings on{' '}
         <a
@@ -86,7 +86,7 @@ const agentFaqs = [
     ),
   },
   {
-    question: 'What do I do if I can’t recover my documents?',
+    question: "What do I do if I can't recover my documents?",
     answer: (
       <>
         Please reach out to us at{' '}
@@ -106,12 +106,12 @@ const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(null)
 
   return (
-    <div className="w-[912px] mt-10 text-[#363b3f] text-xl mb-4 font-bold leading-7">
-      <div className="text-[#363b3f] text-lg font-semibold leading-normal">
+    <div className="w-full max-w-[912px] px-4 sm:px-0 mt-6 sm:mt-10 text-[#363b3f] text-xl mb-4 font-bold leading-7">
+      <div className="text-[#363b3f] text-base sm:text-lg font-semibold leading-normal">
         Frequently Asked Questions
       </div>
 
-      <div className="space-y-4 px-1 mt-4">
+      <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
         {agentFaqs.map((faq, index) => (
           <div
             key={index}
@@ -120,14 +120,14 @@ const FAQ = () => {
             }`}
           >
             <button
-              className="w-full flex justify-between items-center py-4 text-left cursor-pointer"
+              className="w-full flex justify-between items-center py-3 sm:py-4 text-left cursor-pointer"
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
             >
-              <span className="text-[#363b3f] text-sm font-medium">
+              <span className="text-[#363b3f] text-xs sm:text-sm font-medium pr-4">
                 {faq.question}
               </span>
               <div
-                className={`transform transition-transform ${
+                className={`transform transition-transform flex-shrink-0 ${
                   openIndex === index ? 'rotate-180' : ''
                 }`}
               >
@@ -136,7 +136,7 @@ const FAQ = () => {
             </button>
 
             {openIndex === index && (
-              <div className="pb-4 text-sm font-normal leading-5 text-[#363B3F]">
+              <div className="pb-3 sm:pb-4 text-xs sm:text-sm font-normal leading-5 text-[#363B3F]">
                 {faq.answer}
               </div>
             )}

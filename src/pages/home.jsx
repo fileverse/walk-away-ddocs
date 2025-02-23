@@ -18,7 +18,7 @@ const HomePage = () => {
         {/* Upload Section */}
         <UploadSection />
 
-        <div className="w-[912px] text-[#363b3f] text-xl mb-4 font-bold font-['Helvetica Neue'] leading-7">
+        <div className="w-full max-w-[912px] text-[#363b3f] text-lg sm:text-xl mb-4 font-bold leading-6 sm:leading-7">
           Your dDocs, always accessible
         </div>
 
@@ -42,9 +42,10 @@ const HomePage = () => {
 
           <p className="mt-5 text-[#77818a] text-base font-normal leading-normal">
             Unlike big-tech platforms that can access your data, censor it, or
-            arbitrarily revoke your account, dDocs guarantees self-sovereignty.
-            This static page is designed to make it easy for you to control your
-            documents end-to-end without depending on centralized servers 💛
+            arbitrarily revoke your account, dDocs takes steps to offer you
+            self-sovereignty. This static page is designed to make it easy for
+            you to control your documents end-to-end without depending on
+            centralized servers 💛
           </p>
         </div>
 

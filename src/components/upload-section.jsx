@@ -118,9 +118,8 @@ const UploadSection = () => {
               className="hidden"
             />
             <p className="text-gray-500">
-              Drag & drop .JSON file with your encryption key
+              Drag & Drop your dDocs JSON file in this area or
               <br />
-              in this area or{' '}
               <button
                 onClick={onButtonClick}
                 className="text-[#5C0AFF] hover:underline cursor-pointer"
@@ -165,18 +164,16 @@ const UploadSection = () => {
 
             {showKeyHelp && (
               <div className="mt-2 text-[14px] leading-[20px] text-[#77818A] font-normal">
-                Go to{' '}
+                Sign in to your{' '}
                 <a
                   href="https://ddocs.new"
                   target="_blank"
                   className="text-[#5C0AFF] hover:underline"
                 >
                   ddocs.new
-                </a>
-                , sign-in to your account, open the sidebar (top left corner),
-                click on the settings icon on the bottom left corner. From
-                there, click &quot;download&quot; to save your backup keys. Keep
-                those keys stored in a secure folder on your local device.
+                </a>{' '}
+                account, go on Settings and click &quot;download&quot; to save
+                your dDocs Backup Keys.
               </div>
             )}
           </div>
