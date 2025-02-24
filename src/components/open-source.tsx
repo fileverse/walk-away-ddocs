@@ -3,7 +3,7 @@ import { ExternalLinkIcon } from '../assets/icons'
 
 const OpenSource = () => {
   return (
-    <div className="min-h-[12rem] h-auto sm:h-48 p-3 sm:p-4 bg-[#fff9ce] rounded-lg flex-col justify-start items-start gap-2 sm:gap-3 inline-flex">
+    <div className="min-h-[12rem] h-auto  px-4 py-10 sm:p-4 bg-[#fff9ce] rounded-lg flex-col justify-start items-start gap-2 sm:gap-3 inline-flex">
       <div className="self-stretch text-[#363b3f] text-lg sm:text-xl font-bold leading-6 sm:leading-7">
         Open source
       </div>

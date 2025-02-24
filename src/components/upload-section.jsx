@@ -93,15 +93,15 @@ const UploadSection = () => {
   }
 
   return (
-    <div className="mb-8">
-      <div className="px-0 py-10 max-w-[960px] bg-white rounded-b-xl">
+    <div className="mb-[40px]">
+      <div className="px-0 py-10 max-w-[960px] bg-white rounded-xl">
         <div className="py-0 px-6">
           <h2 className="font-medium text-sm leading-5 text-[#363B3F] mb-3">
             Upload your Backup Keys
           </h2>
 
           <div
-            className={`border-[2px] border-dashed ${
+            className={`border-[1px] border-dashed ${
               dragActive ? 'border-blue-500 bg-blue-50' : 'border-[#E8EBEC]'
             } 
                   rounded font-normal text-sm leading-5 text-[#A1AAB1] p-8 text-center mb-4`}
@@ -156,7 +156,7 @@ const UploadSection = () => {
           <div className="mt-2 mb-2">
             <button
               onClick={() => setShowKeyHelp(!showKeyHelp)}
-              className="font-normal text-[14px] leading-5 text-[#77818A] hover:text-gray-600 underline cursor-pointer flex items-center gap-1"
+              className="font-normal text-[14px] leading-5 text-[#77818A] hover:text-gray-600 underline decoration-dashed cursor-pointer flex items-center gap-1"
             >
               Where can I find my backup key?
               <ChevronGreyIcon />

@@ -111,7 +111,7 @@ const FAQ = () => {
         Frequently Asked Questions
       </div>
 
-      <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
+      <div className=" mt-3 sm:mt-4">
         {agentFaqs.map((faq, index) => (
           <div
             key={index}
