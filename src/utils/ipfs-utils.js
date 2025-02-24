@@ -19,41 +19,19 @@ export const withRetry = async (fn, retries = 3) => {
   }
 }
 
-export const parallelFetch = async (urls) => {
-  const AbortControllerMap = new Map()
-
-  const requests = urls.map((url) => {
-    const controller = new AbortController()
-    AbortControllerMap.set(url, controller)
-
-    return fetch(url, { signal: controller.signal })
-      .then((response) => {
-        if (response.status === 200) {
-          AbortControllerMap.forEach((ctrl, key) => {
-            if (key !== url) ctrl.abort()
-          })
-          return response
-        }
-        throw new Error(`Failed with status code ${response.status}`)
-      })
-      .catch((error) => {
-        if (error.name === 'AbortError') {
-          return null
-        }
-        console.error(`Failed to fetch from ${url}`, error)
-        return null
-      })
-  })
-
-  try {
-    const response = await Promise.race(requests)
-    if (!response) throw new Error('All fetch requests failed.')
-    return response
-  } catch (_error) {
-    throw new Error(
-      _error?.message || 'No valid response received from any URL.'
-    )
+export const sequentialFetch = async (urls) => {
+  for (const url of urls) {
+    try {
+      const response = await fetch(url)
+      if (response.status === 200) {
+        return response
+      }
+      console.warn(`Failed to fetch from ${url} with status ${response.status}`)
+    } catch (error) {
+      console.warn(`Failed to fetch from ${url}:`, error)
+    }
   }
+  throw new Error('All fetch requests failed.')
 }
 
 export const fetchFromIPFS = async (hash) => {
@@ -61,13 +39,11 @@ export const fetchFromIPFS = async (hash) => {
     const gatewayUrls = import.meta.env.VITE_PUBLIC_IPFS_GATEWAY_URLS?.split(
       ', '
     )
-
     if (!gatewayUrls) return
 
-    const response = await parallelFetch(
+    const response = await sequentialFetch(
       gatewayUrls.map((url) => `${url}/ipfs/${hash}`)
     )
-
     return response
   } catch (error) {
     console.error('All requests failed:', error)
