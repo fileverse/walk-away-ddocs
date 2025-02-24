@@ -27,6 +27,7 @@ const RetrieveSection = () => {
     contentHash: '',
     fileKey: {},
   })
+  const [activeFiles, setActiveFiles] = useState(new Set())
 
   useEffect(() => {
     if (!portalInformation.ownerPrivateKey) {
@@ -71,6 +72,14 @@ const RetrieveSection = () => {
     fetchContent(contentData)
   }, [contentData.contentHash])
 
+  const handleActiveFile = (fileId) => {
+    setActiveFiles((prev) => {
+      const newSet = new Set(prev)
+      newSet.add(fileId)
+      return newSet
+    })
+  }
+
   return (
     <div className="flex items-center justify-center p-4">
       <div className="w-full max-w-[1312px] bg-white rounded-[12px]">
@@ -78,7 +87,7 @@ const RetrieveSection = () => {
           {/* Loaded state left sidebar */}
           <div className="flex flex-col items-start border-r border-gray-200 p-4 h-[calc(100vh-120px)] overflow-y-auto">
             <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
-              Documents: {portalInformation.fileCount}
+              Documents: {activeFiles.size}
             </div>
             <div className="w-[280px] flex flex-col gap-2 pt-2">
               {Array(portalInformation.fileCount)
@@ -89,6 +98,7 @@ const RetrieveSection = () => {
                     fileId={index}
                     contentData={contentData}
                     setContentData={setContentData}
+                    onActiveFile={() => handleActiveFile(index)}
                   />
                 ))}
             </div>
@@ -186,51 +196,69 @@ const RetrieveSection = () => {
 
 export { RetrieveSection }
 
-export const DdocFile = ({ fileId, setContentData, contentData }) => {
+export const DdocFile = ({
+  fileId,
+  setContentData,
+  contentData,
+  onActiveFile,
+}) => {
   const { portalInformation } = usePortalProvider()
   const { ownerPrivateKey, portalAddress } = portalInformation
-  const [isDeleted, setIsDeleted] = useState(false)
   const [title, setDocTitle] = useState('')
   const [data, setData] = useState()
+  const [hasCalledActiveFile, setHasCalledActiveFile] = useState(false)
 
   const loadFileDetails = async () => {
-    const details = await getContractFile(fileId, portalAddress)
+    try {
+      const details = await getContractFile(fileId, portalAddress)
 
-    if (!details.contentHash || !details.metadataHash)
-      throw new Error('metadata or content is empty')
-    const response = await getIPFSAsset({ ipfsHash: details.metadataHash })
-    const metadata = response?.data
-    if (metadata?.isDeleted) {
-      setIsDeleted(true)
-      return
+      if (!details.contentHash || !details.metadataHash)
+        throw new Error('metadata or content is empty')
+      const response = await getIPFSAsset({ ipfsHash: details.metadataHash })
+      const metadata = response?.data
+      if (metadata?.isDeleted) {
+        return null // Skip rendering if file is deleted
+      }
+
+      const encryptedFileKey = metadata.ownerLock.lockedFileKey
+
+      const _fileKey = await decryptUsingRSAKey(
+        encryptedFileKey,
+        ownerPrivateKey
+      )
+
+      if (!_fileKey) throw new Error('Failed to open file key')
+      const titleInMetadata = metadata?.title
+      const textDecoder = new TextDecoder()
+      const fileKey = JSON.parse(textDecoder.decode(_fileKey))
+      const title = await decryptTitle(
+        titleInMetadata,
+        fileKey,
+        ownerPrivateKey,
+        metadata.archVersion
+      )
+      setDocTitle(title)
+
+      if (fileId === 0) {
+        setContentData({ fileKey, contentHash: details.contentHash })
+      }
+
+      setData({ fileKey, contentHash: details.contentHash })
+
+      if (!hasCalledActiveFile) {
+        onActiveFile()
+        setHasCalledActiveFile(true)
+      }
+    } catch (error) {
+      console.error('Error loading file details:', error)
     }
-
-    const encryptedFileKey = metadata.ownerLock.lockedFileKey
-
-    const _fileKey = await decryptUsingRSAKey(encryptedFileKey, ownerPrivateKey)
-
-    if (!_fileKey) throw new Error('Failed to open file key')
-    const titleInMetadata = metadata?.title
-    const textDecoder = new TextDecoder()
-    const fileKey = JSON.parse(textDecoder.decode(_fileKey))
-    const title = await decryptTitle(
-      titleInMetadata,
-      fileKey,
-      ownerPrivateKey,
-      metadata.archVersion
-    )
-    setDocTitle(title)
-
-    if (fileId === 0) {
-      setContentData({ fileKey, contentHash: details.contentHash })
-    }
-
-    setData({ fileKey, contentHash: details.contentHash })
   }
+
   useEffect(() => {
     loadFileDetails()
   }, [])
-  return (
+
+  return data ? ( // Only render if data exists (file is not deleted)
     <div
       onClick={() => {
         if (!data) return
@@ -247,6 +275,6 @@ export const DdocFile = ({ fileId, setContentData, contentData }) => {
         </div>
       </div>
     </div>
-  )
+  ) : null
 }
 //11.07.2024 17:30
