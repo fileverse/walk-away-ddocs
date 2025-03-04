@@ -74,7 +74,7 @@ Files can be decrypted using any of the available locks:
 - **Owner Lock** – Contains the encrypted file key, which is decrypted using the owner's private key.
 - **Link Lock** – Contains the encrypted file key, which is decrypted using the link key.
 
-You can refer [here](https://github.com/fileverse/walk-away-ddocs/blob/c37548d4b5b380b3597ee7e336e19cf3aec10531/src/components/retrieve-section.jsx#L42)
+You can refer to [this code](https://github.com/fileverse/walk-away-ddocs/blob/c37548d4b5b380b3597ee7e336e19cf3aec10531/src/components/retrieve-section.jsx#L42) for more 
 
 ## How are comments linked to a file ?
 Comments are linked to a file by the ddoc’s portal address and ddocId.
