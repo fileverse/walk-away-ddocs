@@ -15,12 +15,18 @@ const OpenSource = () => {
         censorship-resistance.
       </div>
       <div className="relative group"></div>
-      <div className="px-4 py-2 bg-black/50 align-center rounded justify-center items-center gap-3 inline-flex cursor-not-allowed">
-        <div className="text-white/50 flex items-center gap-2 text-sm font-medium  leading-tight">
-          View code on Github
+      <a
+        href="https://github.com/fileverse/walk-away-ddocs"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div className="px-4 py-2 bg-black align-center rounded justify-center items-center gap-3 inline-flex cursor-pointer">
+          <div className="text-white flex items-center gap-2 text-sm font-medium  leading-tight">
+            View code on Github
+          </div>
+          <ExternalLinkIcon />
         </div>
-        <ExternalLinkIcon />
-      </div>
+      </a>
 
       {/* Custom Tooltip */}
       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
