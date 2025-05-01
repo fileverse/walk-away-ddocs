@@ -17,6 +17,80 @@ export function ThreadIcon() {
   )
 }
 
+export function RadicleIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 44 44"
+      fill="none"
+    >
+      <g shapeRendering="crispEdges">
+        <rect x="8" y="0" width="4" height="4" fill="#5555FF" />
+        <rect x="32" y="0" width="4" height="4" fill="#5555FF" />
+        <rect x="12" y="4" width="4" height="4" fill="#5555FF" />
+        <rect x="28" y="4" width="4" height="4" fill="#5555FF" />
+        <rect x="12" y="8" width="4" height="4" fill="#5555FF" />
+        <rect x="16" y="8" width="4" height="4" fill="#3333DD" />
+        <rect x="20" y="8" width="4" height="4" fill="#5555FF" />
+        <rect x="24" y="8" width="4" height="4" fill="#3333DD" />
+        <rect x="28" y="8" width="4" height="4" fill="#5555FF" />
+        <rect x="8" y="12" width="4" height="4" fill="#5555FF" />
+        <rect x="12" y="12" width="4" height="4" fill="#5555FF" />
+        <rect x="16" y="12" width="4" height="4" fill="#5555FF" />
+        <rect x="20" y="12" width="4" height="4" fill="#5555FF" />
+        <rect x="24" y="12" width="4" height="4" fill="#5555FF" />
+        <rect x="28" y="12" width="4" height="4" fill="#5555FF" />
+        <rect x="32" y="12" width="4" height="4" fill="#5555FF" />
+        <rect x="4" y="16" width="4" height="4" fill="#5555FF" />
+        <rect x="8" y="16" width="4" height="4" fill="#5555FF" />
+        <rect x="12" y="16" width="4" height="4" fill="#F4F4F4" />
+        <rect x="16" y="16" width="4" height="4" fill="#F4F4F4" />
+        <rect x="20" y="16" width="4" height="4" fill="#5555FF" />
+        <rect x="24" y="16" width="4" height="4" fill="#5555FF" />
+        <rect x="28" y="16" width="4" height="4" fill="#F4F4F4" />
+        <rect x="32" y="16" width="4" height="4" fill="#F4F4F4" />
+        <rect x="36" y="16" width="4" height="4" fill="#5555FF" />
+        <rect x="4" y="20" width="4" height="4" fill="#5555FF" />
+        <rect x="8" y="20" width="4" height="4" fill="#5555FF" />
+        <rect x="12" y="20" width="4" height="4" fill="#F4F4F4" />
+        <rect x="16" y="20" width="4" height="4" fill="#FF55FF" />
+        <rect x="20" y="20" width="4" height="4" fill="#5555FF" />
+        <rect x="24" y="20" width="4" height="4" fill="#5555FF" />
+        <rect x="28" y="20" width="4" height="4" fill="#F4F4F4" />
+        <rect x="32" y="20" width="4" height="4" fill="#FF55FF" />
+        <rect x="36" y="20" width="4" height="4" fill="#5555FF" />
+        <rect x="0" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="4" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="8" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="12" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="16" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="20" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="24" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="28" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="32" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="36" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="40" y="24" width="4" height="4" fill="#3333DD" />
+        <rect x="8" y="28" width="4" height="4" fill="#3333DD" />
+        <rect x="16" y="28" width="4" height="4" fill="#5555FF" />
+        <rect x="24" y="28" width="4" height="4" fill="#5555FF" />
+        <rect x="32" y="28" width="4" height="4" fill="#3333DD" />
+        <rect x="8" y="32" width="4" height="4" fill="#3333DD" />
+        <rect x="16" y="32" width="4" height="4" fill="#5555FF" />
+        <rect x="24" y="32" width="4" height="4" fill="#5555FF" />
+        <rect x="32" y="32" width="4" height="4" fill="#3333DD" />
+        <rect x="16" y="36" width="4" height="4" fill="#5555FF" />
+        <rect x="24" y="36" width="4" height="4" fill="#5555FF" />
+        <rect x="12" y="40" width="4" height="4" fill="#5555FF" />
+        <rect x="16" y="40" width="4" height="4" fill="#5555FF" />
+        <rect x="24" y="40" width="4" height="4" fill="#5555FF" />
+        <rect x="28" y="40" width="4" height="4" fill="#5555FF" />
+      </g>
+    </svg>
+  )
+}
+
 export function GithubIcon() {
   return (
     <svg
@@ -204,6 +278,37 @@ export function MdIcon() {
         clip-rule="evenodd"
         d="M15 12.5C15 11.6862 14.8239 11.0086 14.4682 10.4717C14.1093 9.93001 13.6159 9.60481 13.1134 9.41547C12.2806 9.1017 10.9022 9.13729 10.3392 9.15812C10.2678 9.16076 10.2026 9.16317 10.1451 9.1646C9.60606 9.17793 9.16671 9.61741 9.16671 10.1667V14.8334C9.16671 15.3827 9.60606 15.8221 10.1451 15.8355C10.2026 15.8369 10.2675 15.8393 10.3389 15.8419C10.9018 15.8628 12.2806 15.8984 13.1134 15.5846C13.6159 15.3952 14.1093 15.07 14.4682 14.5283C14.8239 13.9915 15 13.3139 15 12.5ZM12.5257 10.9751C12.1466 10.8323 11.2893 10.8092 10.8334 10.8144V14.1857C11.2893 14.1908 12.1466 14.1678 12.5257 14.025C12.771 13.9325 12.9512 13.8004 13.0789 13.6077C13.2098 13.4102 13.3334 13.0762 13.3334 12.5C13.3334 11.9238 13.2098 11.5899 13.0789 11.3923C12.9512 11.1996 12.771 11.0675 12.5257 10.9751Z"
         fill="#363B3F"
+      />
+    </svg>
+  )
+}
+
+export const ExternalLinkIcon = () => {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9.3335 2.00001C9.3335 1.63182 9.63197 1.33334 10.0002 1.33334H14.0002C14.3684 1.33334 14.6668 1.63182 14.6668 2.00001V6.00001C14.6668 6.3682 14.3684 6.66668 14.0002 6.66668C13.632 6.66668 13.3335 6.3682 13.3335 6.00001V2.66668H10.0002C9.63197 2.66668 9.3335 2.3682 9.3335 2.00001Z"
+        fill="white"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.4716 1.52861C14.7319 1.78896 14.7319 2.21107 14.4716 2.47141L7.13823 9.80475C6.87788 10.0651 6.45577 10.0651 6.19543 9.80475C5.93508 9.5444 5.93508 9.12229 6.19543 8.86194L13.5288 1.52861C13.7891 1.26826 14.2112 1.26826 14.4716 1.52861Z"
+        fill="white"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3.3335 4.66668C3.15668 4.66668 2.98712 4.73691 2.86209 4.86194C2.73707 4.98696 2.66683 5.15653 2.66683 5.33334V12.6667C2.66683 12.8435 2.73707 13.0131 2.86209 13.1381C2.98712 13.2631 3.15669 13.3333 3.3335 13.3333H10.6668C10.8436 13.3333 11.0132 13.2631 11.1382 13.1381C11.2633 13.0131 11.3335 12.8435 11.3335 12.6667V8.66668C11.3335 8.29849 11.632 8.00001 12.0002 8.00001C12.3684 8.00001 12.6668 8.29849 12.6668 8.66668V12.6667C12.6668 13.1971 12.4561 13.7058 12.081 14.0809C11.706 14.456 11.1973 14.6667 10.6668 14.6667H3.3335C2.80306 14.6667 2.29436 14.456 1.91928 14.0809C1.54421 13.7058 1.3335 13.1971 1.3335 12.6667V5.33334C1.3335 4.80291 1.54421 4.2942 1.91928 3.91913C2.29436 3.54406 2.80306 3.33334 3.3335 3.33334H7.3335C7.70169 3.33334 8.00016 3.63182 8.00016 4.00001C8.00016 4.3682 7.70169 4.66668 7.3335 4.66668H3.3335Z"
+        fill="white"
       />
     </svg>
   )

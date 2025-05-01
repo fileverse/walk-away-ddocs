@@ -4,26 +4,99 @@ import ChevronIcon from '../assets/chevron-icon'
 /** @type {{ question: string, answer: import('react').ReactNode }[]} */
 const agentFaqs = [
   {
-    question: 'Where i can get my encryption key?',
+    question: 'Where can I find my dDocs Backup Keys?',
     answer: (
       <>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+        Go to{' '}
+        <a
+          href="https://ddocs.new"
+          target="_blank"
+          className="text-[#5C0AFF] hover:underline"
+        >
+          ddocs.new
+        </a>
+        , sign in to your account, open the sidebar, click on the Settings icon
+        on the bottom left corner. In the settings page, click
+        &quot;download&quot; to save your dDocs Backup Keys. Keep those keys
+        stored in a secure folder on your local device. Do not lose those keys.
       </>
     ),
   },
   {
-    question: "What's going on on this page?",
+    question: 'What can I do on this static page?',
     answer: (
       <>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+        This powerful static page lets you retrieve all your dDocs documents as
+        PDFs or .MD files, ensuring you always have access to your content—no
+        matter what happens to the Fileverse team or Apps. Just upload your
+        dDocs Backup Keys to download all your dDocs documents.
       </>
     ),
   },
   {
-    question: 'What motivated Fileverse to build this search engine?',
+    question: 'What are the advantages of a static page?',
     answer: (
       <>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+        This static page grants you greater agency over your document
+        management. A static page minimizes the amount of server-side
+        processing, allows you to download the whole page, modify it and use it
+        offline in complete privacy. <br />
+        <br />
+        The static page is also hosted and accessible via any public IPFS
+        gateway from which you can download it and in so doing improve the
+        censorship-resistance of your documents.
+      </>
+    ),
+  },
+  {
+    question: 'Why did Fileverse build this page?',
+    answer: (
+      <>
+        We believe in true data ownership and self-sovereignty. Unlike
+        traditional platforms that lock you in,{' '}
+        <a
+          href="https://ddocs.new"
+          target="_blank"
+          className="text-[#5C0AFF] hover:underline"
+        >
+          ddocs.new
+        </a>{' '}
+        ensures you can always access your files & account. This backup page
+        guarantees your documents stay in your hands, even if the main app goes
+        offline.
+      </>
+    ),
+  },
+  {
+    question: "What happens if I don't download my dDocs Backup Keys?",
+    answer: (
+      <>
+        Without your dDocs Backup Keys, you won&apos;t be able to decrypt and
+        retrieve your documents. We highly recommend downloading them in advance
+        from your account settings on{' '}
+        <a
+          href="https://ddocs.new"
+          target="_blank"
+          className="text-[#5C0AFF] hover:underline"
+        >
+          ddocs.new
+        </a>
+        .
+      </>
+    ),
+  },
+  {
+    question: "What do I do if I can't recover my documents?",
+    answer: (
+      <>
+        Please reach out to us at{' '}
+        <a
+          href="mailto:hello@fileverse.io"
+          className="text-[#5C0AFF] hover:underline"
+        >
+          hello@fileverse.io
+        </a>{' '}
+        💛
       </>
     ),
   },
@@ -33,28 +106,28 @@ const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(null)
 
   return (
-    <div className="w-full py-8 px-3">
-      <h2 className="mb-6 font-helvetica font-medium text-[18px] leading-6 text-[#363B3F]">
+    <div className="w-full max-w-[912px] px-4 sm:px-0 mt-6 sm:mt-10 text-[#363b3f] text-xl mb-4 font-bold leading-7">
+      <div className="text-[#363b3f] text-base sm:text-lg font-semibold leading-normal">
         Frequently Asked Questions
-      </h2>
+      </div>
 
-      <div className="space-y-4 px-2">
+      <div className=" mt-3 sm:mt-4">
         {agentFaqs.map((faq, index) => (
           <div
             key={index}
             className={`border-b border-gray-200 ${
-              index === 0 ? 'border-t' : ''
+              index === -1 ? 'border-t' : ''
             }`}
           >
             <button
-              className="w-full flex justify-between items-center py-4 text-left cursor-pointer"
+              className="w-full flex justify-between items-center py-3 sm:py-4 text-left cursor-pointer"
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
             >
-              <span className="font-helvetica font-medium text-[14px] leading-5 text-[#363B3F]">
+              <span className="text-[#363b3f] text-xs sm:text-sm font-medium pr-4">
                 {faq.question}
               </span>
               <div
-                className={`transform transition-transform ${
+                className={`transform transition-transform flex-shrink-0 ${
                   openIndex === index ? 'rotate-180' : ''
                 }`}
               >
@@ -63,7 +136,7 @@ const FAQ = () => {
             </button>
 
             {openIndex === index && (
-              <div className="pb-4 font-sans text-sm font-normal leading-5 text-[#363B3F]">
+              <div className="pb-3 sm:pb-4 text-xs sm:text-sm font-normal leading-5 text-[#363B3F]">
                 {faq.answer}
               </div>
             )}

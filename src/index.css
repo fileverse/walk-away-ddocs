@@ -1,18 +1,24 @@
 @import 'tailwindcss';
 :root {
-  --background: #F8F9FA;
+  --background: #f8f9fa;
   --foreground: #000000;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Helvetica, sans-serif;
+  font-family:
+    system-ui, Roboto, 'Helvetica Neue', 'Lato', 'Segoe UI', Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', sans-serif !important;
 }
 
 @keyframes progress {
-  0% { width: 0; }
-  100% { width: 100%; }
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }
 
 .animate-progress {
@@ -34,10 +40,10 @@ body {
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;            /* Chrome, Safari and Opera */
+  display: none; /* Chrome, Safari and Opera */
 }

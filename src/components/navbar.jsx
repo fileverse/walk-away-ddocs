@@ -1,5 +1,5 @@
 import FileverseIcon from '../assets/fileverse.svg'
-import { GithubIcon, ThreadIcon, DdocsIcon } from '../assets/icons'
+import { GithubIcon, ThreadIcon, DdocsIcon, RadicleIcon } from '../assets/icons'
 
 const Navbar = () => {
   return (
@@ -10,20 +10,28 @@ const Navbar = () => {
 
       <div className="flex items-center gap-1">
         <a
+          href="https://x.com/fileverse"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 hover:bg-gray-100 rounded-full"
         >
           <ThreadIcon />
         </a>
+        <div className="p-2 hover:bg-gray-100 rounded-full opacity-50 cursor-not-allowed">
+          <RadicleIcon />
+        </div>
+
         <a
+          href="https://github.com/fileverse/walk-away-ddocs"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 hover:bg-gray-100 rounded-full"
         >
           <GithubIcon />
         </a>
+
         <a
+          href="https://ddocs.new"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 hover:bg-gray-100 rounded-full"

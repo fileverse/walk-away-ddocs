@@ -34,25 +34,25 @@ const UploadSection = () => {
         )
       case 'uploaded':
         return (
-          <div className="bg-[#DDFBDF] rounded-[4px] font-helvetica text-[12px] leading-[16px] font-normal text-[#177E23] p-1">
+          <div className="bg-[#DDFBDF] rounded-[4px]  text-[12px] leading-[16px] font-normal text-[#177E23] p-1">
             Uploaded
           </div>
         )
       case 'failed':
         return (
-          <div className="bg-[#FFE5E5] rounded-[4px] font-helvetica text-[12px] leading-[16px] font-normal text-[#D92D20] p-1">
+          <div className="bg-[#FFE5E5] rounded-[4px]  text-[12px] leading-[16px] font-normal text-[#D92D20] p-1">
             Failed to upload
           </div>
         )
       case 'incorrect':
         return (
-          <div className="bg-[#FFE5E5] rounded-[4px] font-helvetica text-[12px] leading-[16px] font-normal text-[#D92D20] p-1">
+          <div className="bg-[#FFE5E5] rounded-[4px]  text-[12px] leading-[16px] font-normal text-[#D92D20] p-1">
             Incorrect file format
           </div>
         )
       case 'invalid-source':
         return (
-          <div className="bg-[#FFE5E5] rounded-[4px] font-helvetica text-[12px] leading-[16px] font-normal text-[#D92D20] p-1">
+          <div className="bg-[#FFE5E5] rounded-[4px]  text-[12px] leading-[16px] font-normal text-[#D92D20] p-1">
             Wrong file source
           </div>
         )
@@ -93,25 +93,18 @@ const UploadSection = () => {
   }
 
   return (
-    <div className="mb-8">
-      <div className="flex items-start p-2 sm:p-3 bg-[#FFDF0A] rounded-t-xl">
-        <p className="font-helvetica font-normal text-sm leading-5 text-[#363B3F]">
-          Open source. Check a core code in our{' '}
-          <span className="underline"> Github</span>
-        </p>
-      </div>
-
-      <div className="px-0 py-10 max-w-[960px] bg-white rounded-b-xl">
+    <div className="mb-[40px]">
+      <div className="px-0 py-10 max-w-[960px] bg-white rounded-xl">
         <div className="py-0 px-6">
-          <h2 className="font-helvetica font-medium text-sm leading-5 text-[#363B3F] mb-2">
-            Upload your encryption key
+          <h2 className="font-medium text-sm leading-5 text-[#363B3F] mb-3">
+            Upload your Backup Keys
           </h2>
 
           <div
-            className={`border-[2px] border-dashed ${
+            className={`border-[1px] border-dashed ${
               dragActive ? 'border-blue-500 bg-blue-50' : 'border-[#E8EBEC]'
             } 
-                  rounded font-helvetica font-normal text-sm leading-5 text-[#A1AAB1] p-8 text-center mb-4`}
+                  rounded font-normal text-sm leading-5 text-[#A1AAB1] p-8 text-center mb-4`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -125,9 +118,8 @@ const UploadSection = () => {
               className="hidden"
             />
             <p className="text-gray-500">
-              Drag & drop .JSON file with your encryption key
+              Drag & Drop your dDocs JSON file in this area or
               <br />
-              in this area or{' '}
               <button
                 onClick={onButtonClick}
                 className="text-[#5C0AFF] hover:underline cursor-pointer"
@@ -164,21 +156,29 @@ const UploadSection = () => {
           <div className="mt-2 mb-2">
             <button
               onClick={() => setShowKeyHelp(!showKeyHelp)}
-              className="font-helvetica font-normal text-[14px] leading-5 text-[#77818A] hover:text-gray-600 underline cursor-pointer flex items-center gap-1"
+              className="font-normal text-[14px] leading-5 text-[#77818A] hover:text-gray-600 underline decoration-dashed cursor-pointer flex items-center gap-1"
             >
-              Where i can find encryption key?
+              Where can I find my backup key?
               <ChevronGreyIcon />
             </button>
 
             {showKeyHelp && (
-              <div className="mt-2 font-helvetica text-[14px] leading-[20px] text-[#77818A] font-normal">
-                Just open your account settings on dDocs (at top right corner)
-                and download a backup key as .JSON file.
+              <div className="mt-2 text-[14px] leading-[20px] text-[#77818A] font-normal">
+                Sign in to your{' '}
+                <a
+                  href="https://ddocs.new"
+                  target="_blank"
+                  className="text-[#5C0AFF] hover:underline"
+                >
+                  ddocs.new
+                </a>{' '}
+                account, go on Settings and click &quot;download&quot; to save
+                your dDocs Backup Keys.
               </div>
             )}
           </div>
           <button
-            className={`p-4 mt-4 w-full rounded font-helvetica font-medium text-[14px] leading-[20px] cursor-pointer
+            className={`p-4 mt-4 w-full rounded font-medium text-[14px] leading-[20px] cursor-pointer
                   ${
                     file && uploadState === 'uploaded'
                       ? 'bg-[#FFDF0A] text-black hover:bg-[#EFC703]'
