@@ -18,7 +18,7 @@
     "argon2-browser": "^1.18.0",
     "futoin-hkdf": "^1.5.3",
     "js-base64": "^3.7.7",
-    "permissionless": "^0.1.31",
+    "permissionless": "^0.2.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.5",
