@@ -67,6 +67,9 @@ export const editFileTransaction = async (smartAccountClient, args) => {
       args.version || 0,
     ],
   })
+  const calls = await smartAccountClient.account.encodeCalls([
+    { data: callData, to: args.contractAddress, value: BigInt(0) },
+  ])
 
   const getNonce = () =>
     hexToBigInt(
@@ -77,7 +80,7 @@ export const editFileTransaction = async (smartAccountClient, args) => {
 
   // @ts-ignore
   const txHash = await smartAccountClient.sendUserOperation({
-    callData,
+    callData: calls,
     callGasLimit: BigInt(5000000),
     nonce: getNonce(),
   })

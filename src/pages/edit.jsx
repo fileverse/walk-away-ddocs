@@ -277,8 +277,6 @@ export const EditPage = () => {
       formData.walletAddress
     )
 
-    console.log(salt)
-
     const agentKey = buildAgentKey(formData.ag2Hash, salt)
     const agentAccount = privateKeyToAccount(toHex(agentKey))
     const smartAccountClient = await getSmartAccountClient(agentAccount)
