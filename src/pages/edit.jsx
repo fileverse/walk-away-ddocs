@@ -358,7 +358,7 @@ export const Form = ({
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium">Signed Message</label>
+            <label className="block  text-sm font-medium">Signed Message</label>
             <textarea
               name="signedMessage"
               value={formData.signedMessage}
