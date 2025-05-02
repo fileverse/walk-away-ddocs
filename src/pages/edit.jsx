@@ -4,10 +4,11 @@ import { usePortalProvider } from '../providers/portal-provider'
 import { jsonToFile } from '../utils/json-to-file'
 import hkdf from 'futoin-hkdf'
 import { privateKeyToAccount } from 'viem/accounts'
-import { getSmartAccountClientFromAccount } from '../utils/get-smart-account-from-account'
-import { toHex } from 'viem'
+import { toHex, toBytes } from 'viem'
 import { toUint8Array, isValid } from 'js-base64'
 import FileverseIcon from '../assets/fileverse.svg'
+import { getSmartAccountClient } from '../utils/constants'
+
 import tweetnacl from 'tweetnacl'
 import {
   encryptFile,
@@ -24,6 +25,7 @@ import {
 import { getIPFSAsset } from '../utils/ipfs-utils'
 import { getContractFile } from '../utils/contract-functions'
 import { useSearchParams } from 'react-router-dom'
+import { getIdDetails } from '../utils/constants'
 
 export const EditPage = () => {
   const style = async () => {
@@ -216,33 +218,25 @@ export const EditPage = () => {
   const [formData, setFormData] = useState({
     fileId: '',
     linkKey: '',
-    signedMessage: '',
     portalAddress: '',
     apiKey: '',
+    signedMessage: '',
   })
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const getSmartAccountClient = async (signedMessage) => {
-    const derivedKey = hkdf(Buffer.from(signedMessage), 32, {
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setAccountError('')
+
+    const derivedKey = hkdf(Buffer.from(formData.signedMessage), 32, {
       info: Buffer.from('encryptionKey'),
     })
     const privateAccount = privateKeyToAccount(toHex(derivedKey))
+    const smartAccountClient = await getSmartAccountClient(privateAccount)
 
-    const smartAccountClient =
-      await getSmartAccountClientFromAccount(privateAccount)
-    return smartAccountClient
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!formData.signedMessage) return
-    setAccountError('')
-    const smartAccountClient = await getSmartAccountClient(
-      formData.signedMessage
-    )
     // if (smartAccountClient.account.address !== portalInformation.owner) {
     //   setAccountError(
     //     smartAccountClient.account + ' is not the owner of this account'
@@ -358,9 +352,10 @@ export const Form = ({
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block  text-sm font-medium">Signed Message</label>
-            <textarea
+          <div className="mb-3">
+            <label className="block text-sm font-medium">Signed Message</label>
+            <input
+              type="text"
               name="signedMessage"
               value={formData.signedMessage}
               onChange={handleChange}
