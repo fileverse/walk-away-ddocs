@@ -220,66 +220,22 @@ export const EditPage = () => {
     linkKey: '',
     portalAddress: '',
     apiKey: '',
-    identityModuleAddress: '',
-    walletAddress: '',
-    ag2Hash: '',
+    signedMessage: '',
   })
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const HKDFKeyInfo = {
-    MASTER_KEY: 'MASTER_KEY',
-    SIGNING_KEY: 'SIGNING_KEY',
-    AGENT_KEY: 'AGENT_KEY',
-  }
-
-  const DERIVATION_KEY_CONFIG = {
-    [HKDFKeyInfo.MASTER_KEY]: {
-      length: 32,
-      hash: 'SHA-256',
-    },
-    [HKDFKeyInfo.AGENT_KEY]: {
-      length: 32,
-      hash: 'SHA-256',
-    },
-    [HKDFKeyInfo.SIGNING_KEY]: {
-      length: 32,
-      hash: 'SHA-256',
-    },
-  }
-  const createDerivedKey = (secret, salt, info) => {
-    const { length, hash } = DERIVATION_KEY_CONFIG[info]
-    console.log({ secret, salt, info })
-    const privateKey = hkdf(Buffer.from(secret), length, {
-      salt: Buffer.from(salt),
-      info: Buffer.from(info),
-      hash: hash,
-    })
-    return Uint8Array.from(privateKey)
-  }
-
-  const buildAgentKey = (ag2Hash, salt) => {
-    return createDerivedKey(
-      ag2Hash,
-      toBytes(toHex(salt)),
-      HKDFKeyInfo.AGENT_KEY
-    )
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setAccountError('')
 
-    const salt = await getIdDetails(
-      formData.identityModuleAddress,
-      formData.walletAddress
-    )
-
-    const agentKey = buildAgentKey(formData.ag2Hash, salt)
-    const agentAccount = privateKeyToAccount(toHex(agentKey))
-    const smartAccountClient = await getSmartAccountClient(agentAccount)
+    const derivedKey = hkdf(Buffer.from(formData.signedMessage), 32, {
+      info: Buffer.from('encryptionKey'),
+    })
+    const privateAccount = privateKeyToAccount(toHex(derivedKey))
+    const smartAccountClient = await getSmartAccountClient(privateAccount)
 
     // if (smartAccountClient.account.address !== portalInformation.owner) {
     //   setAccountError(
@@ -396,34 +352,11 @@ export const Form = ({
             />
           </div>
           <div className="mb-3">
-            <label className="block text-sm font-medium">
-              Identity Module Address
-            </label>
+            <label className="block text-sm font-medium">Signed Message</label>
             <input
               type="text"
-              name="identityModuleAddress"
-              value={formData.identityModuleAddress}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md"
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <label className="block text-sm font-medium">Wallet Address</label>
-            <input
-              type="text"
-              name="walletAddress"
-              value={formData.walletAddress}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium">Argon hash</label>
-            <input
-              name="ag2Hash"
-              value={formData.ag2Hash}
+              name="signedMessage"
+              value={formData.signedMessage}
               onChange={handleChange}
               className="w-full p-2 border rounded-md"
               required
