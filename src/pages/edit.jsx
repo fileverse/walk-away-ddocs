@@ -308,6 +308,7 @@ export const Form = ({
   accountError,
 }) => {
   const [searchQuery, setSearchQuery] = useSearchParams()
+  console.log('happy')
   return (
     <div className="fixed inset-0 flex items-center bg-opacity justify-center bg-black/50 ">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
