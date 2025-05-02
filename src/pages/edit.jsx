@@ -231,6 +231,8 @@ export const EditPage = () => {
     e.preventDefault()
     setAccountError('')
 
+    console.log({ formData })
+
     const derivedKey = hkdf(Buffer.from(formData.signedMessage), 32, {
       info: Buffer.from('encryptionKey'),
     })
