@@ -6,6 +6,7 @@ const PortalProviderContext = createContext({
     fileCount: 0,
     portalAddress: '',
     ownerPrivateKey: '',
+    smartAccountClient: null,
   },
 })
 
@@ -16,6 +17,11 @@ const PortalProvider = ({ children }) => {
     fileCount: 0,
     portalAddress: '',
     ownerPrivateKey: '',
+    smartAccountClient: null,
+    portalPublicKey: '',
+    ownerPublicKey: '',
+    linkKey: '',
+    fileId: '',
   })
   return (
     <PortalProviderContext.Provider

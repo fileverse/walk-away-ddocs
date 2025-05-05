@@ -1,5 +1,8 @@
-import { toUint8Array } from 'js-base64'
+import { toUint8Array, fromUint8Array } from 'js-base64'
 import tweetnacl from 'tweetnacl'
+import hkdf from 'futoin-hkdf'
+import argon2 from 'argon2-browser/dist/argon2-bundled.min.js'
+
 import { FAILED_IPFS_FETCH_ERROR, fetchFromIPFS, withRetry } from './ipfs-utils'
 
 import * as penumbraLib from '@transcend-io/penumbra'
@@ -96,12 +99,13 @@ export const getDecrytedString = (encryptedString, nonce, secretKey) => {
 export const decryptTitle = async (
   encryptedTitle,
   fileKey,
-  ownerPrivateKey,
-  archVersion
+  archVersion,
+  nonce,
+  secretKey
 ) => {
   if (archVersion === ARCH_VERSION)
     return decryptTitleWithFileKey(encryptedTitle, fileKey)
-  return encryptedTitle
+  return getDecrytedString(encryptedTitle, nonce, secretKey)
 }
 
 export const decryptUsingRSAKey = async (cipherText, privateKey) => {
@@ -142,4 +146,108 @@ export const importKey = (pemContent, format, keyType, keyUsage) => {
     false,
     keyUsage
   )
+}
+
+export const encryptFile = async (file) => {
+  await setPenumbraWorkerLocation()
+  const penumbra = getPenumbra()
+  const stream = await file.arrayBuffer()
+
+  const [encrypted] = await penumbra.encrypt(null, {
+    stream: new Response(new Uint8Array(stream)).body,
+    size: file.size,
+  })
+
+  const decryptionInfo = await penumbra.getDecryptionInfo(encrypted)
+
+  const fileBlob = await penumbra.getBlob(encrypted)
+  const encryptedFile = new File([fileBlob], file.name)
+
+  return {
+    fileKey: {
+      key: fromUint8Array(decryptionInfo.key),
+      iv: fromUint8Array(decryptionInfo.iv),
+      authTag: fromUint8Array(decryptionInfo.authTag),
+    },
+    encryptedFile,
+  }
+}
+
+export const getNaclSecretKey = async (ddocId) => {
+  const { secretKey } = tweetnacl.box.keyPair()
+  const nonce = tweetnacl.randomBytes(tweetnacl.secretbox.nonceLength)
+
+  const derivedKey = await deriveKeyFromAg2Hash(ddocId, nonce)
+
+  const encryptedSecretKey = fromUint8Array(
+    tweetnacl.secretbox(secretKey, nonce, derivedKey),
+    true
+  )
+
+  return { nonce, encryptedSecretKey, secretKey }
+}
+
+export const decryptSecretKey = async (docId, nonce, encryptedSecretKey) => {
+  const derivedKey = await deriveKeyFromAg2Hash(docId, toUint8Array(nonce))
+
+  return tweetnacl.secretbox.open(
+    toUint8Array(encryptedSecretKey),
+    toUint8Array(nonce),
+    derivedKey
+  )
+}
+
+export const generateRandomNonce = (length = 24) => {
+  return window.crypto.getRandomValues(new Uint8Array(length))
+}
+
+export const deriveKeyFromAg2Hash = async (pass, salt) => {
+  const key = await argon2.hash({
+    pass,
+    salt,
+    type: 2,
+    hashLen: 32,
+    time: 2,
+    mem: 102400,
+    parallelism: 8,
+  })
+
+  return hkdf(Buffer.from(key.hash), tweetnacl.secretbox.keyLength, {
+    info: Buffer.from('encryptionKey'),
+  })
+}
+
+export const getNonceAppendedCipherText = (nonce, cipherText) => {
+  return (
+    fromUint8Array(nonce, true) +
+    KEY_SEPARATOR +
+    fromUint8Array(cipherText, true)
+  )
+}
+
+export const importRSAEncryptionKey = (pemContent) => {
+  return importKey(pemContent, 'spki', 'RSA', ['encrypt'])
+}
+
+export const encryptUsingRSAKey = async (value, serverEncryptionKey) => {
+  try {
+    const encryptionKey = await importRSAEncryptionKey(serverEncryptionKey)
+
+    const encoded = new TextEncoder().encode(JSON.stringify(value))
+
+    const encrypted = await window.crypto.subtle.encrypt(
+      {
+        name: 'RSA-OAEP',
+      },
+      encryptionKey,
+      encoded
+    )
+
+    const res = fromUint8Array(new Uint8Array(encrypted))
+
+    return res
+  } catch (error) {
+    console.log(error)
+    throw new Error(error?.message)
+  }
 }

@@ -39,6 +39,7 @@ const useUpload = () => {
           memberPrivateKey,
           portalAddress,
           ownerPrivateKey,
+          ownerPublicKey,
         } = fileContent
         const keys = {
           portalPublicKey,
@@ -55,7 +56,13 @@ const useUpload = () => {
           return
         }
         const fileCount = await getPortalFileCount(portalAddress)
-        setPortalInformation({ fileCount, portalAddress, ownerPrivateKey })
+        setPortalInformation({
+          fileCount,
+          portalAddress,
+          ownerPrivateKey,
+          ownerPublicKey,
+          portalPublicKey,
+        })
         setUploadState('uploaded')
       } catch (err) {
         if (err instanceof InvalidRecoveryJsonError) {
