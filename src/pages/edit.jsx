@@ -4,8 +4,8 @@ import { usePortalProvider } from '../providers/portal-provider'
 import { jsonToFile } from '../utils/json-to-file'
 import hkdf from 'futoin-hkdf'
 import { privateKeyToAccount } from 'viem/accounts'
-import { toHex, toBytes } from 'viem'
-import { toUint8Array, isValid } from 'js-base64'
+import { toHex } from 'viem'
+import { toUint8Array, isValid, fromUint8Array } from 'js-base64'
 import FileverseIcon from '../assets/fileverse.svg'
 import { getSmartAccountClient } from '../utils/constants'
 
@@ -15,6 +15,7 @@ import {
   decryptSecretKey,
   decryptFile,
   decryptTitle,
+  getDecrytedString,
 } from '../utils/crypto'
 import { editFileTransaction } from '../utils/contract-functions'
 import {
@@ -25,7 +26,6 @@ import {
 import { getIPFSAsset } from '../utils/ipfs-utils'
 import { getContractFile } from '../utils/contract-functions'
 import { useSearchParams } from 'react-router-dom'
-import { getIdDetails } from '../utils/constants'
 
 export const EditPage = () => {
   const style = async () => {
@@ -67,9 +67,16 @@ export const EditPage = () => {
         fileData.nonce,
         linkKey
       )
-      const { commentKey, nonce, version, title, ddocId, metadata } = fileData
+      const { commentKey, nonce, version, ddocId, metadata } = fileData
 
       const { portalLock, ownerLock } = metadata
+
+      const titleBytes = new TextEncoder().encode(title)
+
+      const encryptedTitle = fromUint8Array(
+        tweetnacl.secretbox(titleBytes, toUint8Array(nonce), secretKey),
+        true
+      )
 
       const fileMetadata = await generateFileMetadata(
         encryptedFile,
@@ -80,9 +87,8 @@ export const EditPage = () => {
         nonce,
         invokerAddress,
         version,
-        title,
-        ddocId,
-        fileData.shouldEncryptTitle
+        encryptedTitle,
+        ddocId
       )
 
       const { contentIpfsHash, metadataIpfsHash } =
@@ -165,9 +171,13 @@ export const EditPage = () => {
           ? await decryptTitle(
               titleInMetadata,
               { key, iv, authTag },
-              metadata.archVersion
+              metadata.archVersion,
+              metadata.nonce,
+              secretKey
             )
           : titleInMetadata
+
+        setTitle(title)
         const textDecoder = new TextDecoder()
 
         const { cipherText: lockedChatKey, nonce: chatKeyNonce } =
@@ -255,6 +265,8 @@ export const EditPage = () => {
     }))
   }
 
+  const [title, setTitle] = useState('')
+
   return (
     <>
       <nav className="flex justify-between items-center px-6 py-3 border-[#E8EBEC]">
@@ -263,6 +275,13 @@ export const EditPage = () => {
         </div>
 
         <div className="flex items-center gap-1">
+          <input
+            type="type"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-2 border rounded-md"
+            required
+          />
           <button
             disabled={isLoading}
             onClick={publishDoc}

@@ -10,8 +10,6 @@ export const jsonToBytes = (json) =>
 
 import { encryptUsingRSAKey } from '../utils/crypto'
 
-import { fromUint8Array } from 'js-base64'
-
 export const createFileLock = async (encryptionKey, dataKeyMaterial) => {
   const lockedFileKey = await encryptUsingRSAKey(
     dataKeyMaterial.fileKey,
@@ -67,8 +65,7 @@ export const generateFileMetadata = async (
   invokerAddress,
   version,
   title,
-  ddocId,
-  shouldEncryptTitle
+  ddocId
 ) => {
   const dataKeyMaterial = {
     fileKey,
@@ -79,15 +76,9 @@ export const generateFileMetadata = async (
 
   const ownerLock = portalSecretKeys.ownerLock
   const linkLock = await createLinkLock(secretKey, dataKeyMaterial)
-  const titleBytes = new TextEncoder().encode(title)
 
   return {
-    title: shouldEncryptTitle
-      ? fromUint8Array(
-          tweetnacl.secretbox(titleBytes, toUint8Array(nonce), secretKey),
-          true
-        )
-      : title,
+    title,
     size: file.size,
     mimeType: 'application/json',
     portalLock,
@@ -153,4 +144,32 @@ export const getNonceAndCipherText = (
     return { nonce, cipherText }
   }
   return { nonce: defaultNonce, cipherText: nonceAppendedCipherText }
+}
+
+const toAesKey = async (key) => {
+  return await window.crypto.subtle.importKey(
+    'raw',
+    key,
+    { name: 'AES-GCM' },
+    false,
+    ['encrypt', 'decrypt']
+  )
+}
+
+export const encryptTitleWithFileKey = async (title, fileKey) => {
+  const key = await toAesKey(toUint8Array(fileKey.key))
+
+  const iv = toUint8Array(fileKey.iv)
+
+  const encryptedTitle = await window.crypto.subtle.encrypt(
+    {
+      name: 'AES-GCM',
+      iv,
+      tagLength: 128,
+    },
+    key,
+    new TextEncoder().encode(title)
+  )
+
+  return new Uint8Array(encryptedTitle)
 }
