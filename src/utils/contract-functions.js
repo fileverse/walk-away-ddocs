@@ -1,8 +1,9 @@
 import { publicClient } from './constants'
 
 import abi from '../abi.json'
+import newAbi from '../portal-contract-abi.json'
 
-export const getPortalFileCount = async (contractAddress) => {
+export const getLegacyPortalFileCount = async (contractAddress) => {
   const count = await publicClient.readContract({
     address: contractAddress,
     abi,
@@ -12,7 +13,17 @@ export const getPortalFileCount = async (contractAddress) => {
   return Number(count)
 }
 
-export const getContractFile = async (fileId, contractAddress) => {
+export const getNewPortalFileCount = async (contractAddress) => {
+  const count = await publicClient.readContract({
+    address: contractAddress,
+    abi: newAbi,
+    functionName: 'getFileCount',
+  })
+
+  return Number(count)
+}
+
+export const getLegacyContractFile = async (fileId, contractAddress) => {
   const [metadataHash, contentHash] = await publicClient.readContract({
     address: contractAddress,
     abi,
@@ -23,10 +34,29 @@ export const getContractFile = async (fileId, contractAddress) => {
   return { metadataHash, contentHash }
 }
 
+export const getNewContractFile = async (fileId, contractAddress) => {
+  const details = await publicClient.readContract({
+    address: contractAddress,
+    abi: newAbi,
+    functionName: 'files',
+    args: [fileId],
+  })
+  return details
+}
+
 export const getPortalKeysVerifiers = async (contractAddress) => {
   return await publicClient.readContract({
     address: contractAddress,
     abi,
+    functionName: 'keyVerifiers',
+    args: [0],
+  })
+}
+
+export const getNewPortalKeysVerifiers = async (contractAddress) => {
+  return await publicClient.readContract({
+    address: contractAddress,
+    abi: newAbi,
     functionName: 'keyVerifiers',
     args: [0],
   })

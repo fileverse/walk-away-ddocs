@@ -1,11 +1,29 @@
 import { useEffect, useState, useRef } from 'react'
 import { DdocsIcon, PdfIcon, MdIcon } from '../assets/icons'
-import { decryptTitle, decryptUsingRSAKey, decryptFile } from '../utils/crypto'
+import {
+  decryptTitle,
+  decryptUsingRSAKey,
+  decryptLegacyFile,
+} from '../utils/crypto'
 import { getIPFSAsset } from '../utils/ipfs-utils'
-import { getContractFile } from '../utils/contract-functions'
+import {
+  getLegacyContractFile,
+  getNewContractFile,
+} from '../utils/contract-functions'
 import { usePortalProvider } from '../providers/portal-provider'
 import { useNavigate } from 'react-router-dom'
 import { PreviewDdocEditor, handleContentPrint } from '@fileverse-dev/ddoc'
+import { eciesDecrypt } from '@fileverse/crypto/ecies'
+import { toBytes } from '@fileverse/crypto/utils'
+import { fromUint8Array } from 'js-base64'
+import {
+  fetchNewFileResponse,
+  decryptNewFile,
+} from '../utils/new-file-decryption'
+import {
+  reconstructGateMetadata,
+  decryptTitleWithFileKey,
+} from '../utils/new-portal-utils'
 
 const Skeleton = ({ className = '' }) => {
   return (
@@ -26,20 +44,43 @@ const RetrieveSection = () => {
   const [contentData, setContentData] = useState({
     contentHash: '',
     fileKey: {},
+    archVersion: '',
   })
-  const [activeFiles, setActiveFiles] = useState(new Set())
+  const [legacyActiveFiles, setLegacyActiveFiles] = useState(new Set())
+  const [newActiveFiles, setNewActiveFiles] = useState(new Set())
 
   useEffect(() => {
-    if (!portalInformation.ownerPrivateKey) {
+    if (
+      !portalInformation.legacyOwnerPrivateKey &&
+      !portalInformation.newOwnerPrivateKey
+    ) {
       navigate('/')
     }
   }, [portalInformation])
 
   const fetchContent = async (contentData) => {
+    if (contentData.archVersion === '4') {
+      try {
+        setIsError('')
+        setIsLoading(true)
+        const response = await fetchNewFileResponse(contentData.contentHash)
+        const decryptedResult = await decryptNewFile(
+          contentData.fileKey,
+          response
+        )
+        setContent(decryptedResult.file)
+        setIsLoading(false)
+      } catch (error) {
+        setIsError(error?.message || 'Failed to Fetch content')
+      } finally {
+        setIsLoading(false)
+      }
+      return
+    }
     try {
       setIsError('')
       setIsLoading(true)
-      const response = await decryptFile(
+      const response = await decryptLegacyFile(
         contentData.fileKey,
         contentData.contentHash
       )
@@ -72,8 +113,16 @@ const RetrieveSection = () => {
     fetchContent(contentData)
   }, [contentData.contentHash])
 
-  const handleActiveFile = (fileId) => {
-    setActiveFiles((prev) => {
+  const handleLegacyActiveFile = (fileId) => {
+    setLegacyActiveFiles((prev) => {
+      const newSet = new Set(prev)
+      newSet.add(fileId)
+      return newSet
+    })
+  }
+
+  const handleNewActiveFile = (fileId) => {
+    setNewActiveFiles((prev) => {
       const newSet = new Set(prev)
       newSet.add(fileId)
       return newSet
@@ -86,21 +135,47 @@ const RetrieveSection = () => {
         <div className="flex">
           {/* Loaded state left sidebar */}
           <div className="flex flex-col items-start border-r border-gray-200 p-4 h-[calc(100vh-120px)] overflow-y-auto">
-            <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
-              Documents: {activeFiles.size}
-            </div>
             <div className="w-[280px] flex flex-col gap-2 pt-2">
-              {Array(portalInformation.fileCount)
-                .fill(0)
-                .map((_, index) => (
-                  <DdocFile
-                    key={index}
-                    fileId={index}
-                    contentData={contentData}
-                    setContentData={setContentData}
-                    onActiveFile={() => handleActiveFile(index)}
-                  />
-                ))}
+              {portalInformation.newFileCount > 0 && (
+                <>
+                  <p>New Portal</p>
+                  <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
+                    Documents: {newActiveFiles.size}
+                  </div>
+                  {Array(portalInformation.newFileCount)
+                    .fill(0)
+                    .map((_, index) => (
+                      <NewDdocFile
+                        key={index}
+                        fileId={index}
+                        contentData={contentData}
+                        setContentData={setContentData}
+                        onActiveFile={() => handleNewActiveFile(index)}
+                      />
+                    ))}
+                  <hr />
+                </>
+              )}
+
+              {portalInformation.legacyFileCount > 0 && (
+                <>
+                  <p>Old Portal</p>
+                  <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
+                    Documents: {legacyActiveFiles.size}
+                  </div>
+                  {Array(portalInformation.legacyFileCount)
+                    .fill(0)
+                    .map((_, index) => (
+                      <LegacyDdocFile
+                        key={index}
+                        fileId={index}
+                        contentData={contentData}
+                        setContentData={setContentData}
+                        onActiveFile={() => handleLegacyActiveFile(index)}
+                      />
+                    ))}
+                </>
+              )}
             </div>
           </div>
 
@@ -196,21 +271,26 @@ const RetrieveSection = () => {
 
 export { RetrieveSection }
 
-export const DdocFile = ({
+export const LegacyDdocFile = ({
   fileId,
   setContentData,
   contentData,
   onActiveFile,
 }) => {
   const { portalInformation } = usePortalProvider()
-  const { ownerPrivateKey, portalAddress } = portalInformation
+  const { legacyOwnerPrivateKey, legacyPortalAddress } = portalInformation
   const [title, setDocTitle] = useState('')
   const [data, setData] = useState()
   const [hasCalledActiveFile, setHasCalledActiveFile] = useState(false)
+  const [localData, setLocalData] = useState({
+    fileKey: '',
+    contentHash: '',
+    archVersion: '',
+  })
 
   const loadFileDetails = async () => {
     try {
-      const details = await getContractFile(fileId, portalAddress)
+      const details = await getLegacyContractFile(fileId, legacyPortalAddress)
 
       if (!details.contentHash || !details.metadataHash)
         throw new Error('metadata or content is empty')
@@ -224,7 +304,7 @@ export const DdocFile = ({
 
       const _fileKey = await decryptUsingRSAKey(
         encryptedFileKey,
-        ownerPrivateKey
+        legacyOwnerPrivateKey
       )
 
       if (!_fileKey) throw new Error('Failed to open file key')
@@ -234,16 +314,24 @@ export const DdocFile = ({
       const title = await decryptTitle(
         titleInMetadata,
         fileKey,
-        ownerPrivateKey,
+        legacyOwnerPrivateKey,
         metadata.archVersion
       )
       setDocTitle(title)
-
-      if (fileId === 0) {
-        setContentData({ fileKey, contentHash: details.contentHash })
-      }
-
+      setLocalData({
+        fileKey,
+        contentHash: details.contentHash,
+        archVersion: metadata.version,
+      })
       setData({ fileKey, contentHash: details.contentHash })
+
+      if (portalInformation.newFileCount === 0) {
+        setContentData({
+          fileKey: fileKey,
+          contentHash: details.contentHash,
+          archVersion: metadata.version,
+        })
+      }
 
       if (!hasCalledActiveFile) {
         onActiveFile()
@@ -262,7 +350,111 @@ export const DdocFile = ({
     <div
       onClick={() => {
         if (!data) return
-        setContentData(data)
+        setContentData({
+          fileKey: localData.fileKey,
+          contentHash: localData.contentHash,
+          archVersion: localData.archVersion,
+        })
+      }}
+      className={`flex items-center gap-3 p-2 hover:bg-[#F8F9FA] ${contentData.contentHash === data?.contentHash && 'bg-[#F8F9FA]'} rounded-[4px] cursor-pointer`}
+    >
+      <div className="w-5 h-5 bg-[#FFE5B3] rounded-[4px] flex items-center justify-center">
+        <DdocsIcon />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-[14px] leading-[20px] text-[#363B3F] truncate">
+          {title}
+        </div>
+      </div>
+    </div>
+  ) : null
+}
+
+export const NewDdocFile = ({
+  fileId,
+  setContentData,
+  contentData,
+  onActiveFile,
+}) => {
+  const { portalInformation } = usePortalProvider()
+  const { newPortalAddress } = portalInformation
+  const [title, setDocTitle] = useState('')
+  const [data, setData] = useState()
+  const [hasCalledActiveFile, setHasCalledActiveFile] = useState(false)
+  const [localData, setLocalData] = useState({
+    fileKey: '',
+    contentHash: '',
+    archVersion: '',
+  })
+
+  const loadFileDetails = async () => {
+    try {
+      const details = await getNewContractFile(fileId, newPortalAddress)
+      const metadataIPFSHash = details[2]
+      const contentIPFSHash = details[3]
+      const gateIPFSHash = details[4] || ''
+
+      if (!contentIPFSHash || !metadataIPFSHash)
+        throw new Error('metadata or content is empty')
+      const metadata = await reconstructGateMetadata(
+        metadataIPFSHash,
+        gateIPFSHash
+      )
+      if (metadata?.isDeleted) {
+        return null // Skip rendering if file is deleted
+      }
+
+      const ownerLockedFileKey = metadata.ownerLock.lockedFileKey
+
+      const fileKeyArray = eciesDecrypt(
+        toBytes(portalInformation.newOwnerPrivateKey),
+        ownerLockedFileKey
+      )
+
+      const fileKey = fromUint8Array(fileKeyArray)
+
+      const title = await decryptTitleWithFileKey(metadata.title, fileKey)
+
+      setDocTitle(title)
+
+      setLocalData({
+        fileKey,
+        contentHash: contentIPFSHash,
+        archVersion: metadata.version,
+      })
+
+      if (fileId === 0) {
+        setContentData({
+          fileKey,
+          contentHash: contentIPFSHash,
+          archVersion: metadata.version,
+        })
+      }
+
+      setData({ fileKey, contentHash: contentIPFSHash })
+
+      if (!hasCalledActiveFile) {
+        onActiveFile()
+        setHasCalledActiveFile(true)
+      }
+    } catch (error) {
+      console.error('Error loading file details:', error)
+    }
+  }
+
+  useEffect(() => {
+    loadFileDetails()
+  }, [])
+
+  return data ? ( // Only render if data exists (file is not deleted)
+    <div
+      onClick={() => {
+        if (!data) return
+        setContentData({
+          fileKey: localData.fileKey,
+          contentHash: localData.contentHash,
+          archVersion: localData.archVersion,
+        })
       }}
       className={`flex items-center gap-3 p-2 hover:bg-[#F8F9FA] ${contentData.contentHash === data?.contentHash && 'bg-[#F8F9FA]'} rounded-[4px] cursor-pointer`}
     >

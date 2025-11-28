@@ -2,9 +2,11 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import copy from 'rollup-plugin-copy'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
   plugins: [
+    nodePolyfills(),
     react(),
     tailwindcss(),
     copy({
@@ -20,6 +22,9 @@ export default defineConfig({
       hook: 'buildStart',
     }),
   ],
+  define: {
+    global: 'globalThis',
+  },
   optimizeDeps: {
     exclude: ['@transcend-io/penumbra'], // Ensure it's included
   },

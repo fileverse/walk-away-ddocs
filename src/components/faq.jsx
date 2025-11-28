@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState } from 'react'
 import ChevronIcon from '../assets/chevron-icon'
 
@@ -115,9 +116,8 @@ const FAQ = () => {
         {agentFaqs.map((faq, index) => (
           <div
             key={index}
-            className={`border-b border-gray-200 ${
-              index === -1 ? 'border-t' : ''
-            }`}
+            className={`border-b border-gray-200 ${index === -1 ? 'border-t' : ''
+              }`}
           >
             <button
               className="w-full flex justify-between items-center py-3 sm:py-4 text-left cursor-pointer"
@@ -127,9 +127,8 @@ const FAQ = () => {
                 {faq.question}
               </span>
               <div
-                className={`transform transition-transform flex-shrink-0 ${
-                  openIndex === index ? 'rotate-180' : ''
-                }`}
+                className={`transform transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''
+                  }`}
               >
                 <ChevronIcon />
               </div>
