@@ -50,7 +50,10 @@ const RetrieveSection = () => {
   const [newActiveFiles, setNewActiveFiles] = useState(new Set())
 
   useEffect(() => {
-    if (!portalInformation.legacyOwnerPrivateKey) {
+    if (
+      !portalInformation.legacyOwnerPrivateKey &&
+      !portalInformation.newOwnerPrivateKey
+    ) {
       navigate('/')
     }
   }, [portalInformation])

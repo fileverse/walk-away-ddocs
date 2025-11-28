@@ -13,11 +13,8 @@ export const keysInLegacySecretFile = [
 
 export const keysInNewSecretFile = [
   'portalAddress',
-  'ownerDid',
-  'ownerSecret',
   'appEncryptionKey',
   'appDecryptionKey',
-  'permissionAddress',
   'source',
 ]
 
@@ -65,11 +62,16 @@ export const validateNewKey = (keysObject) => {
 }
 
 export const validateKey = (legacyKeysObject, newKeysObject) => {
+  const oldKeys = Object.keys(legacyKeysObject)
   const newKeys = Object.keys(newKeysObject)
 
   if (newKeys.length === 0) {
     validateLegacyKey(legacyKeysObject)
-  } else {
+  }
+  if (oldKeys.length === 0) {
+    validateNewKey(newKeysObject)
+  }
+  if (oldKeys.length > 0 && newKeys.length > 0) {
     validateLegacyKey(legacyKeysObject)
     validateNewKey(newKeysObject)
   }

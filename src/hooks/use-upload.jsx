@@ -33,23 +33,36 @@ const useUpload = () => {
 
   const verifyKeys = async (oldBackupKeys, newBackupKeys) => {
     let newPortalAddress = null
-    let newKeysVerified = true
-    const {
-      portalAddress: legacyPortalAddress,
-      ownerPrivateKey: legacyOwnerPrivateKey,
-      legacyKeysVerified,
-    } = await verifyLegacyKeys(oldBackupKeys)
+    let newKeysVerified = false
+    let legacyKeysVerified = false
+    let legacyPortalAddress = null
+    let legacyOwnerPrivateKey = null
+
+    if (Object.keys(oldBackupKeys).length > 0) {
+      const {
+        portalAddress,
+        ownerPrivateKey,
+        legacyKeysVerified: legacyKeysVerifiedResult,
+      } = await verifyLegacyKeys(oldBackupKeys)
+      legacyKeysVerified = legacyKeysVerifiedResult
+      legacyPortalAddress = portalAddress
+      legacyOwnerPrivateKey = ownerPrivateKey
+      if (!legacyKeysVerified) {
+        setUploadState('incorrect')
+        return
+      }
+    }
 
     if (Object.keys(newBackupKeys).length > 0) {
       const { portalAddress, newKeysVerified: newKeysVerifiedResult } =
         await verifyNewKeys(newBackupKeys)
       newPortalAddress = portalAddress
       newKeysVerified = newKeysVerifiedResult
-    }
 
-    if (!legacyKeysVerified || !newKeysVerified) {
-      setUploadState('incorrect')
-      return
+      if (!newKeysVerified) {
+        setUploadState('incorrect')
+        return
+      }
     }
 
     return {
@@ -63,17 +76,21 @@ const useUpload = () => {
   const verifyFileContentFromReader = (reader) => {
     reader.onload = async (e) => {
       try {
+        let legacyFileCount = 0
         let newFileCount = 0
         const fileContent = JSON.parse(decodeURIComponent(e?.target?.result))
         const { oldBackupKeys, newBackupKeys } = splitBackupKeys(fileContent)
+
 
         validateKey(oldBackupKeys, newBackupKeys)
 
         const { legacyPortalAddress, legacyOwnerPrivateKey, newPortalAddress } =
           await verifyKeys(oldBackupKeys, newBackupKeys)
 
-        const legacyFileCount =
-          await getLegacyPortalFileCount(legacyPortalAddress)
+
+        if (legacyPortalAddress) {
+          legacyFileCount = await getLegacyPortalFileCount(legacyPortalAddress)
+        }
 
         if (newPortalAddress) {
           newFileCount = await getNewPortalFileCount(newPortalAddress)
@@ -136,7 +153,11 @@ const useUpload = () => {
 
   const handleRetrieveClick = () => {
     if (file && uploadState === 'uploaded') {
-      navigate('/' + portalInformation.legacyPortalAddress + '/retrieve')
+      if (portalInformation.legacyPortalAddress) {
+        navigate('/' + portalInformation.legacyPortalAddress + '/retrieve')
+      } else if (portalInformation.newPortalAddress) {
+        navigate('/' + portalInformation.newPortalAddress + '/retrieve')
+      }
     }
   }
 

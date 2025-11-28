@@ -38,7 +38,6 @@ export const verifyNewKeys = async (newBackupKeys) => {
     appDecryptionKey,
     contractAddress: portalAddress,
   })
-
   return {
     portalAddress,
     newKeysVerified: isVerified,

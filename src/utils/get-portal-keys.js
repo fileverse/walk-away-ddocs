@@ -12,6 +12,17 @@ function isOldBackupKeys(value) {
   )
 }
 
+function isNewBackupKeysFormat(value) {
+  return (
+    typeof value === 'object' &&
+    'portalAddress' in value &&
+    'ownerPublicKey' in value &&
+    'ownerPrivateKey' in value &&
+    'portalPublicKey' in value &&
+    'source' in value
+  )
+}
+
 function isNewBackupKeys(value) {
   return (
     typeof value === 'object' &&
@@ -29,13 +40,32 @@ export function splitBackupKeys(data) {
   let oldBackupKeys = {}
   let newBackupKeys = {}
 
-  // Case 1: data itself is a single OldBackupKeys object
-  if (isOldBackupKeys(data)) {
+  //Just old backup keys (before Privacy Upgrade)
+  if (
+    isOldBackupKeys(data) &&
+    data.memberPublicKey !== '' &&
+    data.memberPrivateKey !== ''
+  ) {
     oldBackupKeys = data
     return { oldBackupKeys, newBackupKeys }
   }
 
-  // Case 2: data is a map: randomKey -> backupObject
+  //Just new backup keys (after Privacy Upgrade)
+  if (
+    isNewBackupKeysFormat(data) &&
+    data.memberPublicKey === '' &&
+    data.memberPrivateKey === ''
+  ) {
+    newBackupKeys = {
+      portalAddress: data.portalAddress,
+      appEncryptionKey: data.ownerPublicKey,
+      appDecryptionKey: data.ownerPrivateKey,
+      source: data.source,
+    }
+    return { oldBackupKeys, newBackupKeys }
+  }
+
+  // Mixed backup keys (after Walk Away page v2)
   if (data && typeof data === 'object') {
     for (const value of Object.values(data)) {
       if (isOldBackupKeys(value)) {
