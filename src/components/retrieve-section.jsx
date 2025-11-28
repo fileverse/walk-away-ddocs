@@ -153,26 +153,29 @@ const RetrieveSection = () => {
                         onActiveFile={() => handleNewActiveFile(index)}
                       />
                     ))}
+                  <hr />
                 </>
               )}
 
-              <hr />
-
-              <p>Old Portal</p>
-              <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
-                Documents: {legacyActiveFiles.size}
-              </div>
-              {Array(portalInformation.legacyFileCount)
-                .fill(0)
-                .map((_, index) => (
-                  <LegacyDdocFile
-                    key={index}
-                    fileId={index}
-                    contentData={contentData}
-                    setContentData={setContentData}
-                    onActiveFile={() => handleLegacyActiveFile(index)}
-                  />
-                ))}
+              {portalInformation.legacyFileCount > 0 && (
+                <>
+                  <p>Old Portal</p>
+                  <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
+                    Documents: {legacyActiveFiles.size}
+                  </div>
+                  {Array(portalInformation.legacyFileCount)
+                    .fill(0)
+                    .map((_, index) => (
+                      <LegacyDdocFile
+                        key={index}
+                        fileId={index}
+                        contentData={contentData}
+                        setContentData={setContentData}
+                        onActiveFile={() => handleLegacyActiveFile(index)}
+                      />
+                    ))}
+                </>
+              )}
             </div>
           </div>
 
