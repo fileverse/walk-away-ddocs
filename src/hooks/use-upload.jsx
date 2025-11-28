@@ -81,12 +81,10 @@ const useUpload = () => {
         const fileContent = JSON.parse(decodeURIComponent(e?.target?.result))
         const { oldBackupKeys, newBackupKeys } = splitBackupKeys(fileContent)
 
-
         validateKey(oldBackupKeys, newBackupKeys)
 
         const { legacyPortalAddress, legacyOwnerPrivateKey, newPortalAddress } =
           await verifyKeys(oldBackupKeys, newBackupKeys)
-
 
         if (legacyPortalAddress) {
           legacyFileCount = await getLegacyPortalFileCount(legacyPortalAddress)

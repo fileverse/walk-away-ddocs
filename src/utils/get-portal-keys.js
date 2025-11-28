@@ -65,6 +65,12 @@ export function splitBackupKeys(data) {
     return { oldBackupKeys, newBackupKeys }
   }
 
+  //Just new backup keys (after Walk Away page v2)
+  if (isNewBackupKeys(data)) {
+    newBackupKeys = data
+    return { oldBackupKeys, newBackupKeys }
+  }
+
   // Mixed backup keys (after Walk Away page v2)
   if (data && typeof data === 'object') {
     for (const value of Object.values(data)) {
