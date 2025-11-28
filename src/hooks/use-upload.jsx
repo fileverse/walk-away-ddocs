@@ -5,9 +5,13 @@ import {
   InvalidRecoveryJsonError,
   InvalidSourceError,
 } from '../utils/validate-keys'
-import { verifyPortalKeysFromContract } from '../utils/verify-portal-keys-from-contract'
 import { usePortalProvider } from '../providers/portal-provider'
-import { getPortalFileCount } from '../utils/contract-functions'
+import {
+  getLegacyPortalFileCount,
+  getNewPortalFileCount,
+} from '../utils/contract-functions'
+import { splitBackupKeys } from '../utils/get-portal-keys'
+import { verifyLegacyKeys, verifyNewKeys } from '../utils/verify-keys'
 
 const useUpload = () => {
   const navigate = useNavigate()
@@ -27,35 +31,79 @@ const useUpload = () => {
     }
   }, [])
 
+  const verifyKeys = async (oldBackupKeys, newBackupKeys) => {
+    let newPortalAddress = null
+    let newKeysVerified = false
+    let legacyKeysVerified = false
+    let legacyPortalAddress = null
+    let legacyOwnerPrivateKey = null
+
+    if (Object.keys(oldBackupKeys).length > 0) {
+      const {
+        portalAddress,
+        ownerPrivateKey,
+        legacyKeysVerified: legacyKeysVerifiedResult,
+      } = await verifyLegacyKeys(oldBackupKeys)
+      legacyKeysVerified = legacyKeysVerifiedResult
+      legacyPortalAddress = portalAddress
+      legacyOwnerPrivateKey = ownerPrivateKey
+      if (!legacyKeysVerified) {
+        setUploadState('incorrect')
+        return
+      }
+    }
+
+    if (Object.keys(newBackupKeys).length > 0) {
+      const { portalAddress, newKeysVerified: newKeysVerifiedResult } =
+        await verifyNewKeys(newBackupKeys)
+      newPortalAddress = portalAddress
+      newKeysVerified = newKeysVerifiedResult
+
+      if (!newKeysVerified) {
+        setUploadState('incorrect')
+        return
+      }
+    }
+
+    return {
+      legacyPortalAddress,
+      legacyOwnerPrivateKey,
+      newPortalAddress,
+      newKeysVerified,
+    }
+  }
+
   const verifyFileContentFromReader = (reader) => {
     reader.onload = async (e) => {
       try {
+        let legacyFileCount = 0
+        let newFileCount = 0
         const fileContent = JSON.parse(decodeURIComponent(e?.target?.result))
-        validateKey(fileContent)
-        const {
-          portalPublicKey,
-          portalPrivateKey,
-          memberPublicKey,
-          memberPrivateKey,
-          portalAddress,
-          ownerPrivateKey,
-        } = fileContent
-        const keys = {
-          portalPublicKey,
-          portalPrivateKey,
-          memberPublicKey,
-          memberPrivateKey,
+        const { oldBackupKeys, newBackupKeys } = splitBackupKeys(fileContent)
+
+
+        validateKey(oldBackupKeys, newBackupKeys)
+
+        const { legacyPortalAddress, legacyOwnerPrivateKey, newPortalAddress } =
+          await verifyKeys(oldBackupKeys, newBackupKeys)
+
+
+        if (legacyPortalAddress) {
+          legacyFileCount = await getLegacyPortalFileCount(legacyPortalAddress)
         }
-        const isVerified = await verifyPortalKeysFromContract({
-          keys,
-          contractAddress: portalAddress,
+
+        if (newPortalAddress) {
+          newFileCount = await getNewPortalFileCount(newPortalAddress)
+        }
+
+        setPortalInformation({
+          legacyFileCount,
+          newFileCount,
+          legacyPortalAddress: legacyPortalAddress,
+          legacyOwnerPrivateKey: legacyOwnerPrivateKey,
+          newPortalAddress: newPortalAddress,
+          newOwnerPrivateKey: newBackupKeys.appDecryptionKey,
         })
-        if (!isVerified) {
-          setUploadState('incorrect')
-          return
-        }
-        const fileCount = await getPortalFileCount(portalAddress)
-        setPortalInformation({ fileCount, portalAddress, ownerPrivateKey })
         setUploadState('uploaded')
       } catch (err) {
         if (err instanceof InvalidRecoveryJsonError) {
@@ -105,7 +153,11 @@ const useUpload = () => {
 
   const handleRetrieveClick = () => {
     if (file && uploadState === 'uploaded') {
-      navigate('/' + portalInformation.portalAddress + '/retrieve')
+      if (portalInformation.legacyPortalAddress) {
+        navigate('/' + portalInformation.legacyPortalAddress + '/retrieve')
+      } else if (portalInformation.newPortalAddress) {
+        navigate('/' + portalInformation.newPortalAddress + '/retrieve')
+      }
     }
   }
 

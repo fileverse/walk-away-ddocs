@@ -1,4 +1,5 @@
-import { bytesToHex } from 'viem'
+import { bytesToHex, sha256 } from 'viem'
+import { toUint8Array } from 'js-base64'
 
 export const generateSHA256Hash = async (string) => {
   const utf8 = new TextEncoder().encode(string)
@@ -22,5 +23,18 @@ export const isKeysVerified = async (keyVerifiers, keys) => {
     memberEncHash,
     memberDecHash,
   ]
+  return computedHashes.every((hash, index) => hash === keyVerifiers[index])
+}
+
+export const isNewKeysVerified = async (
+  appEncryptionKey,
+  appDecryptionKey,
+  keyVerifiers
+) => {
+  const [appEncryptionKeySha256, appDecryptionKeySha256] = await Promise.all([
+    sha256(toUint8Array(appEncryptionKey)),
+    sha256(toUint8Array(appDecryptionKey)),
+  ])
+  const computedHashes = [appEncryptionKeySha256, appDecryptionKeySha256]
   return computedHashes.every((hash, index) => hash === keyVerifiers[index])
 }

@@ -17,18 +17,18 @@ const Navbar = () => {
         >
           <ThreadIcon />
         </a>
+        <div className="p-2 hover:bg-gray-100 rounded-full opacity-50 cursor-not-allowed">
+          <RadicleIcon />
+        </div>
+
         <a
-          href="https://agents.fileverse.io"
+          href="https://github.com/fileverse/walk-away-ddocs"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 hover:bg-gray-100 rounded-full"
         >
-          <RadicleIcon />
-        </a>
-
-        <div className="p-2 hover:bg-gray-100 rounded-full opacity-50 cursor-not-allowed">
           <GithubIcon />
-        </div>
+        </a>
 
         <a
           href="https://ddocs.new"

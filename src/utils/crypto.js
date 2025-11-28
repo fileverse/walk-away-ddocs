@@ -4,7 +4,7 @@ import { FAILED_IPFS_FETCH_ERROR, fetchFromIPFS, withRetry } from './ipfs-utils'
 
 import * as penumbraLib from '@transcend-io/penumbra'
 
-export const decryptFile = async (decryptionInfo, contentIpfsHash) => {
+export const decryptLegacyFile = async (decryptionInfo, contentIpfsHash) => {
   const fetchedResponse = await withRetry(
     () => fetchFromIPFS(contentIpfsHash),
     2
