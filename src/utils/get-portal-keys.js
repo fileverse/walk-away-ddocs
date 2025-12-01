@@ -50,7 +50,7 @@ export function splitBackupKeys(data) {
     return { oldBackupKeys, newBackupKeys }
   }
 
-  //Just new backup keys (after Privacy Upgrade)
+  //Just new backup keys (after Privacy Upgrade and before Walk Away page v2)
   if (
     isNewBackupKeysFormat(data) &&
     data.memberPublicKey === '' &&
@@ -65,13 +65,13 @@ export function splitBackupKeys(data) {
     return { oldBackupKeys, newBackupKeys }
   }
 
-  //Just new backup keys (after Walk Away page v2)
+  //Just new backup keys (after Walk Away page v2 and after Privacy Upgrade)
   if (isNewBackupKeys(data)) {
     newBackupKeys = data
     return { oldBackupKeys, newBackupKeys }
   }
 
-  // Mixed backup keys (after Walk Away page v2)
+  // Mixed backup keys (after Walk Away page v2 and after Privacy Upgrade and has both old and new backup keys)
   if (data && typeof data === 'object') {
     for (const value of Object.values(data)) {
       if (isOldBackupKeys(value)) {

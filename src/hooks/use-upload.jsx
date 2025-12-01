@@ -79,10 +79,14 @@ const useUpload = () => {
         let legacyFileCount = 0
         let newFileCount = 0
         const fileContent = JSON.parse(decodeURIComponent(e?.target?.result))
+
+        // common function to split and format all the types of backup keys into old and new backup keys
         const { oldBackupKeys, newBackupKeys } = splitBackupKeys(fileContent)
 
+        // make sure we have all the necessary keys in the backup file
         validateKey(oldBackupKeys, newBackupKeys)
 
+        // Verify keys from the backup file using on-chain contract verification
         const { legacyPortalAddress, legacyOwnerPrivateKey, newPortalAddress } =
           await verifyKeys(oldBackupKeys, newBackupKeys)
 
