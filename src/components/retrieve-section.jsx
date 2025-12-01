@@ -59,6 +59,7 @@ const RetrieveSection = () => {
   }, [portalInformation])
 
   const fetchContent = async (contentData) => {
+    //new decryption logic after Privacy Upgrade
     if (contentData.archVersion === '4') {
       try {
         setIsError('')
@@ -77,6 +78,7 @@ const RetrieveSection = () => {
       }
       return
     }
+    //old decryption logic before Privacy Upgrade
     try {
       setIsError('')
       setIsLoading(true)
