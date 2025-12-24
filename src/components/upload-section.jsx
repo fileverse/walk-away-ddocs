@@ -180,8 +180,8 @@ const UploadSection = () => {
                 >
                   dsheets.new
                 </a>{' '}
-                account, go to Settings and in the &quot;Recovery&quot; section,
-                click &quot;download&quot; to save your Backup Keys.
+                account, go on Settings and click &quot;download&quot; to save
+                your Backup Keys.
               </div>
             )}
           </div>
