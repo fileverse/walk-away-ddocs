@@ -45,7 +45,7 @@ const HomePage = () => {
             interact with the decentralized networks (Gnosis & IPFS) that ensure
             the storage of your content. Doing so allows you to bypass
             third-parties while downloading your documents and spreadsheets in
-            PDFs / .MD / .XLSX / .CSV and decrypting them locally.
+            PDFs / .MD / .CSV and decrypting them locally.
           </p>
 
           <p className="mt-5 text-[#77818a] text-base font-normal leading-normal">

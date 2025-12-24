@@ -37,7 +37,7 @@ const agentFaqs = [
     answer: (
       <>
         This powerful static page lets you retrieve all your dDocs (PDFs or .MD)
-        and dSheets (.XLSX or .CSV), ensuring you always have access to your
+        and dSheets, ensuring you always have access to your
         content, no matter what happens to the Fileverse team or Apps. Just
         upload your Backup Keys to download all your files.
       </>

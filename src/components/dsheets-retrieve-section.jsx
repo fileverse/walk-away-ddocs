@@ -16,7 +16,7 @@ import {
 import { eciesDecrypt } from '@fileverse/crypto/ecies'
 import { toBytes } from '@fileverse/crypto/utils'
 import { fromUint8Array } from 'js-base64'
-import { handleExportToXLSX, handleExportToCSV } from '@fileverse-dev/dsheet'
+import { handleExportToCSV } from '@fileverse-dev/dsheet'
 
 const DsheetsRetrieveSection = () => {
   const navigate = useNavigate()
@@ -196,20 +196,6 @@ const DsheetsRetrieveSection = () => {
                   <span className="text-[12px] text-[#6C757D]">
                     Download as:
                   </span>
-                  <div
-                    onClick={() => {
-                      const ydocRef = getYdocRef()
-                      if (!ydocRef.current) return
-                      handleExportToXLSX(
-                        sheetEditorRef,
-                        ydocRef,
-                        contentData.dsheetId
-                      )
-                    }}
-                    className="text-[12px] font-bold px-2 py-1 hover:bg-[#F8F9FA] rounded-[4px] border border-[#E8EBEC] cursor-pointer"
-                  >
-                    <span>.xlsx</span>
-                  </div>
                   <div
                     onClick={() => {
                       const ydocRef = getYdocRef()
