@@ -5,7 +5,7 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--background) !important;
   color: var(--foreground);
   font-family:
     system-ui, Roboto, 'Helvetica Neue', 'Lato', 'Segoe UI', Oxygen, Ubuntu,
@@ -46,4 +46,12 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
+}
+
+.fortune-read-only > div {
+  margin-top: 0 !important;
+}
+
+.fortune-stat-area {
+  display: none !important;
 }

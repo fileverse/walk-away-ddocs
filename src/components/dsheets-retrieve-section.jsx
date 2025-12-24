@@ -1,39 +1,24 @@
-import { useEffect, useState, useRef } from 'react'
-import { DdocsIcon, PdfIcon, MdIcon } from '../assets/icons'
-import {
-  decryptTitle,
-  decryptUsingRSAKey,
-  decryptLegacyFile,
-} from '../utils/crypto'
-import { getIPFSAsset } from '../utils/ipfs-utils'
-import {
-  getLegacyContractFile,
-  getNewContractFile,
-} from '../utils/contract-functions'
-import { usePortalProvider } from '../providers/portal-provider'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PreviewDdocEditor, handleContentPrint } from '@fileverse-dev/ddoc'
-import { eciesDecrypt } from '@fileverse/crypto/ecies'
-import { toBytes } from '@fileverse/crypto/utils'
-import { fromUint8Array } from 'js-base64'
+import { DsheetsIcon } from '../assets/icons'
+import { usePortalProvider } from '../providers/portal-provider'
 import {
   fetchNewFileResponse,
   decryptNewFile,
 } from '../utils/new-file-decryption'
+import { Skeleton } from './retrieve-section'
+import { DsheetEditor } from '@fileverse-dev/dsheet'
+import { getNewContractFile } from '../utils/contract-functions'
 import {
   reconstructGateMetadata,
   decryptTitleWithFileKey,
 } from '../utils/new-portal-utils'
+import { eciesDecrypt } from '@fileverse/crypto/ecies'
+import { toBytes } from '@fileverse/crypto/utils'
+import { fromUint8Array } from 'js-base64'
+import { handleExportToCSV } from '@fileverse-dev/dsheet'
 
-export const Skeleton = ({ className = '' }) => {
-  return (
-    <div
-      className={`animate-pulse bg-gradient-to-r from-[#F8F9FA] to-[#E6E6E6] rounded-[4px] ${className}`}
-    />
-  )
-}
-
-const RetrieveSection = () => {
+const DsheetsRetrieveSection = () => {
   const navigate = useNavigate()
 
   const { portalInformation } = usePortalProvider()
@@ -45,9 +30,59 @@ const RetrieveSection = () => {
     contentHash: '',
     fileKey: {},
     archVersion: '',
+    dsheetId: '',
   })
-  const [legacyActiveFiles, setLegacyActiveFiles] = useState(new Set())
   const [newActiveFiles, setNewActiveFiles] = useState(new Set())
+
+  const sheetEditorRef = useRef(null)
+  const cssLinkRef = useRef(null)
+  const getYdocRef = () => ({ current: window?.ydocRef })
+
+  // Dynamically load fortune-react CSS only when component mounts
+  useEffect(() => {
+    // Check if CSS is already loaded to avoid duplicates
+    const existingLink = document.getElementById('fortune-react-css')
+    if (existingLink) {
+      cssLinkRef.current = existingLink
+      return
+    }
+
+    // Use Vite's ?url suffix to get the CSS file URL without importing it globally
+    // This allows us to inject it as a link element that we can remove later
+    import('@fileverse-dev/fortune-react/lib/index.css?url')
+      .then((urlModule) => {
+        // Create and inject the CSS link element
+        const link = document.createElement('link')
+        link.id = 'fortune-react-css'
+        link.rel = 'stylesheet'
+        link.type = 'text/css'
+        link.href = urlModule.default
+        link.setAttribute('data-fortune-react', 'true')
+
+        // Append to document head
+        document.head.appendChild(link)
+        cssLinkRef.current = link
+      })
+      .catch((error) => {
+        // Fallback: if ?url doesn't work, try direct import
+        // This will add CSS globally but is better than nothing
+        console.warn(
+          'Failed to load fortune-react CSS with ?url suffix, using fallback:',
+          error
+        )
+        import('@fileverse-dev/fortune-react/lib/index.css').catch((err) => {
+          console.error('Fallback CSS import also failed:', err)
+        })
+      })
+
+    // Cleanup function to remove the CSS when component unmounts
+    return () => {
+      if (cssLinkRef.current && cssLinkRef.current.parentNode) {
+        cssLinkRef.current.parentNode.removeChild(cssLinkRef.current)
+        cssLinkRef.current = null
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (
@@ -59,69 +94,28 @@ const RetrieveSection = () => {
   }, [portalInformation])
 
   const fetchContent = async (contentData) => {
-    //new decryption logic after Privacy Upgrade
-    if (contentData.archVersion === '4') {
-      try {
-        setIsError('')
-        setIsLoading(true)
-        const response = await fetchNewFileResponse(contentData.contentHash)
-        const decryptedResult = await decryptNewFile(
-          contentData.fileKey,
-          response
-        )
-        setContent(decryptedResult.file)
-        setIsLoading(false)
-      } catch (error) {
-        setIsError(error?.message || 'Failed to Fetch content')
-      } finally {
-        setIsLoading(false)
-      }
-      return
-    }
-    //old decryption logic before Privacy Upgrade
     try {
       setIsError('')
       setIsLoading(true)
-      const response = await decryptLegacyFile(
+      const response = await fetchNewFileResponse(contentData.contentHash)
+      const decryptedResult = await decryptNewFile(
         contentData.fileKey,
-        contentData.contentHash
+        response
       )
-      setContent(response.file)
+      setContent(decryptedResult.file)
+      setIsLoading(false)
     } catch (error) {
       setIsError(error?.message || 'Failed to Fetch content')
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const editorRef = useRef(null)
-
-  const exportPdf = () => {
-    if (!content || !editorRef.current) return
-    handleContentPrint(editorRef.current.getEditor().getHTML())
-  }
-
-  const exportMd = () => {
-    if (!editorRef.current) return
-    editorRef.current.exportContentAsMarkDown(contentData.contentHash + '.md')
-  }
-
-  const style = async () => {
-    return await import('@fileverse-dev/ddoc/styles')
+    return
   }
 
   useEffect(() => {
     if (!contentData.contentHash) return
     fetchContent(contentData)
   }, [contentData.contentHash])
-
-  const handleLegacyActiveFile = (fileId) => {
-    setLegacyActiveFiles((prev) => {
-      const newSet = new Set(prev)
-      newSet.add(fileId)
-      return newSet
-    })
-  }
 
   const handleNewActiveFile = (fileId) => {
     setNewActiveFiles((prev) => {
@@ -132,7 +126,7 @@ const RetrieveSection = () => {
   }
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4 bg-[#F8F9FA]">
       <div className="w-full max-w-[1312px] bg-white rounded-[12px]">
         <div className="flex">
           {/* Loaded state left sidebar */}
@@ -140,40 +134,19 @@ const RetrieveSection = () => {
             <div className="w-[280px] flex flex-col gap-2 pt-2">
               {portalInformation.newFileCount > 0 && (
                 <>
-                  <p>New Portal</p>
+                  <p>dSheets</p>
                   <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
                     Documents: {newActiveFiles.size}
                   </div>
                   {Array(portalInformation.newFileCount)
                     .fill(0)
                     .map((_, index) => (
-                      <NewDdocFile
+                      <DsheetFile
                         key={index}
                         fileId={index}
                         contentData={contentData}
                         setContentData={setContentData}
                         onActiveFile={() => handleNewActiveFile(index)}
-                      />
-                    ))}
-                  <hr />
-                </>
-              )}
-
-              {portalInformation.legacyFileCount > 0 && (
-                <>
-                  <p>Old Portal</p>
-                  <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
-                    Documents: {legacyActiveFiles.size}
-                  </div>
-                  {Array(portalInformation.legacyFileCount)
-                    .fill(0)
-                    .map((_, index) => (
-                      <LegacyDdocFile
-                        key={index}
-                        fileId={index}
-                        contentData={contentData}
-                        setContentData={setContentData}
-                        onActiveFile={() => handleLegacyActiveFile(index)}
                       />
                     ))}
                 </>
@@ -219,24 +192,20 @@ const RetrieveSection = () => {
                 <div className="font-medium text-[14px] leading-[20px] text-[#363B3F]">
                   IPFS hash: {contentData?.contentHash}
                 </div>
-                <div className="flex">
-                  <button className="p-2 hover:bg-[#F8F9FA] rounded-[4px]">
-                    <span className="text-[14px] text-[#6C757D]">
-                      Download as:
-                    </span>
-                  </button>
-                  <button
-                    onClick={exportPdf}
-                    className="p-2 hover:bg-[#F8F9FA] rounded-[4px]"
+                <div className="flex gap-2 items-center">
+                  <span className="text-[12px] text-[#6C757D]">
+                    Download as:
+                  </span>
+                  <div
+                    onClick={() => {
+                      const ydocRef = getYdocRef()
+                      if (!ydocRef.current) return
+                      handleExportToCSV(sheetEditorRef, ydocRef)
+                    }}
+                    className="text-[12px] font-bold px-2 py-1 hover:bg-[#F8F9FA] rounded-[4px] border border-[#E8EBEC] cursor-pointer"
                   >
-                    <PdfIcon />
-                  </button>
-                  <button
-                    onClick={exportMd}
-                    className="p-2 hover:bg-[#F8F9FA] rounded-[4px]"
-                  >
-                    <MdIcon />
-                  </button>
+                    <span>.csv</span>
+                  </div>
                 </div>
               </div>
               {isError ? (
@@ -254,12 +223,15 @@ const RetrieveSection = () => {
                 </div>
               ) : (
                 <div className="p-6 overflow-y-auto h-[calc(100vh-180px)] scrollbar-hide">
-                  <PreviewDdocEditor
-                    className={`${style()}`}
-                    ref={editorRef}
-                    initialContent={content}
-                    isPreviewMode={true}
-                    unFocused
+                  <DsheetEditor
+                    isReadOnly={true}
+                    dsheetId={contentData.dsheetId}
+                    sheetEditorRef={sheetEditorRef}
+                    enableIndexeddbSync={true}
+                    isAuthorized={false}
+                    isNewSheet={false}
+                    portalContent={content}
+                    commentData={{}}
                   />
                 </div>
               )}
@@ -271,108 +243,7 @@ const RetrieveSection = () => {
   )
 }
 
-export { RetrieveSection }
-
-export const LegacyDdocFile = ({
-  fileId,
-  setContentData,
-  contentData,
-  onActiveFile,
-}) => {
-  const { portalInformation } = usePortalProvider()
-  const { legacyOwnerPrivateKey, legacyPortalAddress } = portalInformation
-  const [title, setDocTitle] = useState('')
-  const [data, setData] = useState()
-  const [hasCalledActiveFile, setHasCalledActiveFile] = useState(false)
-  const [localData, setLocalData] = useState({
-    fileKey: '',
-    contentHash: '',
-    archVersion: '',
-  })
-
-  const loadFileDetails = async () => {
-    try {
-      const details = await getLegacyContractFile(fileId, legacyPortalAddress)
-
-      if (!details.contentHash || !details.metadataHash)
-        throw new Error('metadata or content is empty')
-      const response = await getIPFSAsset({ ipfsHash: details.metadataHash })
-      const metadata = response?.data
-      if (metadata?.isDeleted) {
-        return null // Skip rendering if file is deleted
-      }
-
-      const encryptedFileKey = metadata.ownerLock.lockedFileKey
-
-      const _fileKey = await decryptUsingRSAKey(
-        encryptedFileKey,
-        legacyOwnerPrivateKey
-      )
-
-      if (!_fileKey) throw new Error('Failed to open file key')
-      const titleInMetadata = metadata?.title
-      const textDecoder = new TextDecoder()
-      const fileKey = JSON.parse(textDecoder.decode(_fileKey))
-      const title = await decryptTitle(
-        titleInMetadata,
-        fileKey,
-        legacyOwnerPrivateKey,
-        metadata.archVersion
-      )
-      setDocTitle(title)
-      setLocalData({
-        fileKey,
-        contentHash: details.contentHash,
-        archVersion: metadata.version,
-      })
-      setData({ fileKey, contentHash: details.contentHash })
-
-      if (portalInformation.newFileCount === 0) {
-        setContentData({
-          fileKey: fileKey,
-          contentHash: details.contentHash,
-          archVersion: metadata.version,
-        })
-      }
-
-      if (!hasCalledActiveFile) {
-        onActiveFile()
-        setHasCalledActiveFile(true)
-      }
-    } catch (error) {
-      console.error('Error loading file details:', error)
-    }
-  }
-
-  useEffect(() => {
-    loadFileDetails()
-  }, [])
-
-  return data ? ( // Only render if data exists (file is not deleted)
-    <div
-      onClick={() => {
-        if (!data) return
-        setContentData({
-          fileKey: localData.fileKey,
-          contentHash: localData.contentHash,
-          archVersion: localData.archVersion,
-        })
-      }}
-      className={`flex items-center gap-3 p-2 hover:bg-[#F8F9FA] ${contentData.contentHash === data?.contentHash && 'bg-[#F8F9FA]'} rounded-[4px] cursor-pointer`}
-    >
-      <div className="w-5 h-5 bg-[#FFE5B3] rounded-[4px] flex items-center justify-center">
-        <DdocsIcon />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="font-medium text-[14px] leading-[20px] text-[#363B3F] truncate">
-          {title}
-        </div>
-      </div>
-    </div>
-  ) : null
-}
-
-export const NewDdocFile = ({
+export const DsheetFile = ({
   fileId,
   setContentData,
   contentData,
@@ -405,8 +276,9 @@ export const NewDdocFile = ({
       if (metadata?.isDeleted) {
         return null // Skip rendering if file is deleted
       }
+      const dsheetId = metadata.dsheetId
 
-      const ownerLockedFileKey = metadata.ownerLock.lockedFileKey
+      const ownerLockedFileKey = metadata.appLock.lockedFileKey
 
       const fileKeyArray = eciesDecrypt(
         toBytes(portalInformation.newOwnerPrivateKey),
@@ -423,6 +295,7 @@ export const NewDdocFile = ({
         fileKey,
         contentHash: contentIPFSHash,
         archVersion: metadata.version,
+        dsheetId,
       })
 
       if (fileId === 0) {
@@ -456,12 +329,13 @@ export const NewDdocFile = ({
           fileKey: localData.fileKey,
           contentHash: localData.contentHash,
           archVersion: localData.archVersion,
+          dsheetId: localData.dsheetId,
         })
       }}
       className={`flex items-center gap-3 p-2 hover:bg-[#F8F9FA] ${contentData.contentHash === data?.contentHash && 'bg-[#F8F9FA]'} rounded-[4px] cursor-pointer`}
     >
       <div className="w-5 h-5 bg-[#FFE5B3] rounded-[4px] flex items-center justify-center">
-        <DdocsIcon />
+        <DsheetsIcon />
       </div>
       <div className="flex-1 min-w-0">
         <div className="font-medium text-[14px] leading-[20px] text-[#363B3F] truncate">
@@ -471,4 +345,5 @@ export const NewDdocFile = ({
     </div>
   ) : null
 }
-//11.07.2024 17:30
+
+export { DsheetsRetrieveSection }

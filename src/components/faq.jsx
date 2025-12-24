@@ -5,21 +5,30 @@ import ChevronIcon from '../assets/chevron-icon'
 /** @type {{ question: string, answer: import('react').ReactNode }[]} */
 const agentFaqs = [
   {
-    question: 'Where can I find my dDocs Backup Keys?',
+    question: 'Where can I find my dDocs/dSheets Backup Keys?',
     answer: (
       <>
-        Go to{' '}
+        Go to either{' '}
         <a
           href="https://ddocs.new"
           target="_blank"
           className="text-[#5C0AFF] hover:underline"
         >
           ddocs.new
+        </a>{' '}
+        or{' '}
+        <a
+          href="https://dsheets.new"
+          target="_blank"
+          className="text-[#5C0AFF] hover:underline"
+        >
+          dsheets.new
         </a>
         , sign in to your account, open the sidebar, click on the Settings icon
-        on the bottom left corner. In the settings page, click
-        &quot;download&quot; to save your dDocs Backup Keys. Keep those keys
-        stored in a secure folder on your local device. Do not lose those keys.
+        on the bottom left corner. In the settings page, simply go on
+        &quot;Recovery&quot; and click &quot;download&quot; to save your Backup
+        Keys. Keep those keys stored in a secure folder on your local device. Do
+        not lose those keys.
       </>
     ),
   },
@@ -27,10 +36,10 @@ const agentFaqs = [
     question: 'What can I do on this static page?',
     answer: (
       <>
-        This powerful static page lets you retrieve all your dDocs documents as
-        PDFs or .MD files, ensuring you always have access to your content—no
-        matter what happens to the Fileverse team or Apps. Just upload your
-        dDocs Backup Keys to download all your dDocs documents.
+        This powerful static page lets you retrieve all your dDocs (PDFs or .MD)
+        and dSheets, ensuring you always have access to your
+        content, no matter what happens to the Fileverse team or Apps. Just
+        upload your Backup Keys to download all your files.
       </>
     ),
   },
@@ -38,14 +47,14 @@ const agentFaqs = [
     question: 'What are the advantages of a static page?',
     answer: (
       <>
-        This static page grants you greater agency over your document
-        management. A static page minimizes the amount of server-side
-        processing, allows you to download the whole page, modify it and use it
-        offline in complete privacy. <br />
+        This static page grants you greater agency over your files management.A
+        static page minimizes the amount of server-side processing, allows you
+        to download the whole page, modify it and use it offline in complete
+        privacy. <br />
         <br />
         The static page is also hosted and accessible via any public IPFS
         gateway from which you can download it and in so doing improve the
-        censorship-resistance of your documents.
+        censorship-resistance of your documents & spreadsheets.
       </>
     ),
   },
@@ -62,32 +71,32 @@ const agentFaqs = [
         >
           ddocs.new
         </a>{' '}
-        ensures you can always access your files & account. This backup page
-        guarantees your documents stay in your hands, even if the main app goes
-        offline.
-      </>
-    ),
-  },
-  {
-    question: "What happens if I don't download my dDocs Backup Keys?",
-    answer: (
-      <>
-        Without your dDocs Backup Keys, you won&apos;t be able to decrypt and
-        retrieve your documents. We highly recommend downloading them in advance
-        from your account settings on{' '}
+        &{' '}
         <a
-          href="https://ddocs.new"
+          href="https://dsheets.new"
           target="_blank"
           className="text-[#5C0AFF] hover:underline"
         >
-          ddocs.new
-        </a>
-        .
+          dsheets.new
+        </a>{' '}
+        ensure you can always access your documents and spreadsheets. This
+        backup page guarantees your content can be retrieved and stay stay in
+        your hands, no matter what happens to the main front-ends of the apps.
       </>
     ),
   },
   {
-    question: "What do I do if I can't recover my documents?",
+    question: 'What happens if I don’t download my backup keys?',
+    answer: (
+      <>
+        Without your Backup Keys, you won’t be able to decrypt and retrieve your
+        files. We highly recommend downloading them in advance from your account
+        settings.
+      </>
+    ),
+  },
+  {
+    question: 'What do I do if I can’t recover my files?',
     answer: (
       <>
         Please reach out to us at{' '}
@@ -96,6 +105,14 @@ const agentFaqs = [
           className="text-[#5C0AFF] hover:underline"
         >
           hello@fileverse.io
+        </a>{' '}
+        or on{' '}
+        <a
+          href="https://x.com/fileverse"
+          target="_blank"
+          className="text-[#5C0AFF] hover:underline"
+        >
+          Twitter
         </a>{' '}
         💛
       </>
@@ -116,8 +133,9 @@ const FAQ = () => {
         {agentFaqs.map((faq, index) => (
           <div
             key={index}
-            className={`border-b border-gray-200 ${index === -1 ? 'border-t' : ''
-              }`}
+            className={`border-b border-gray-200 ${
+              index === -1 ? 'border-t' : ''
+            }`}
           >
             <button
               className="w-full flex justify-between items-center py-3 sm:py-4 text-left cursor-pointer"
@@ -127,8 +145,9 @@ const FAQ = () => {
                 {faq.question}
               </span>
               <div
-                className={`transform transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''
-                  }`}
+                className={`transform transition-transform flex-shrink-0 ${
+                  openIndex === index ? 'rotate-180' : ''
+                }`}
               >
                 <ChevronIcon />
               </div>
