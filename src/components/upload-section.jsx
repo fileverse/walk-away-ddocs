@@ -172,8 +172,16 @@ const UploadSection = () => {
                 >
                   ddocs.new
                 </a>{' '}
-                account, go on Settings and click &quot;download&quot; to save
-                your dDocs Backup Keys.
+                or{' '}
+                <a
+                  href="https://dsheets.new"
+                  target="_blank"
+                  className="text-[#5C0AFF] hover:underline"
+                >
+                  dsheets.new
+                </a>{' '}
+                account, go to Settings and in the &quot;Recovery&quot; section,
+                click &quot;download&quot; to save your Backup Keys.
               </div>
             )}
           </div>
