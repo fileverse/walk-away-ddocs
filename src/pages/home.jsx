@@ -4,7 +4,7 @@ import { Footer } from '../components/footer'
 import { OpenSource } from '../components/open-source'
 const HomePage = () => {
   return (
-    <div className="">
+    <div className="bg-[#F8F9FA]">
       {/* Main Content */}
       <main className="max-w-5xl mx-auto p-8">
         <h1 className="font-bold text-2xl leading-10 text-[#363B3F] mb-2">

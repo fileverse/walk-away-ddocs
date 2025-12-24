@@ -1,9 +1,15 @@
 import FileverseIcon from '../assets/fileverse.svg'
-import { GithubIcon, ThreadIcon, DdocsIcon, RadicleIcon } from '../assets/icons'
+import {
+  GithubIcon,
+  ThreadIcon,
+  DdocsIcon,
+  RadicleIcon,
+  DsheetsIcon,
+} from '../assets/icons'
 
 const Navbar = () => {
   return (
-    <nav className="flex justify-between items-center px-6 py-3 border-[#E8EBEC]">
+    <nav className="flex justify-between items-center px-6 py-3 border-[#E8EBEC] bg-[#F8F9FA]">
       <div className="flex items-center">
         <img src={FileverseIcon} alt="Fileverse" />
       </div>
@@ -37,6 +43,15 @@ const Navbar = () => {
           className="p-2 hover:bg-gray-100 rounded-full"
         >
           <DdocsIcon />
+        </a>
+
+        <a
+          href="https://dsheets.new"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 hover:bg-gray-100 rounded-full"
+        >
+          <DsheetsIcon />
         </a>
       </div>
     </nav>

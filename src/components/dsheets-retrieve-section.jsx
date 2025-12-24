@@ -16,7 +16,6 @@ import {
 import { eciesDecrypt } from '@fileverse/crypto/ecies'
 import { toBytes } from '@fileverse/crypto/utils'
 import { fromUint8Array } from 'js-base64'
-import '@fileverse-dev/fortune-react/lib/index.css'
 import { handleExportToXLSX, handleExportToCSV } from '@fileverse-dev/dsheet'
 
 const DsheetsRetrieveSection = () => {
@@ -36,7 +35,54 @@ const DsheetsRetrieveSection = () => {
   const [newActiveFiles, setNewActiveFiles] = useState(new Set())
 
   const sheetEditorRef = useRef(null)
+  const cssLinkRef = useRef(null)
   const getYdocRef = () => ({ current: window?.ydocRef })
+
+  // Dynamically load fortune-react CSS only when component mounts
+  useEffect(() => {
+    // Check if CSS is already loaded to avoid duplicates
+    const existingLink = document.getElementById('fortune-react-css')
+    if (existingLink) {
+      cssLinkRef.current = existingLink
+      return
+    }
+
+    // Use Vite's ?url suffix to get the CSS file URL without importing it globally
+    // This allows us to inject it as a link element that we can remove later
+    import('@fileverse-dev/fortune-react/lib/index.css?url')
+      .then((urlModule) => {
+        // Create and inject the CSS link element
+        const link = document.createElement('link')
+        link.id = 'fortune-react-css'
+        link.rel = 'stylesheet'
+        link.type = 'text/css'
+        link.href = urlModule.default
+        link.setAttribute('data-fortune-react', 'true')
+
+        // Append to document head
+        document.head.appendChild(link)
+        cssLinkRef.current = link
+      })
+      .catch((error) => {
+        // Fallback: if ?url doesn't work, try direct import
+        // This will add CSS globally but is better than nothing
+        console.warn(
+          'Failed to load fortune-react CSS with ?url suffix, using fallback:',
+          error
+        )
+        import('@fileverse-dev/fortune-react/lib/index.css').catch((err) => {
+          console.error('Fallback CSS import also failed:', err)
+        })
+      })
+
+    // Cleanup function to remove the CSS when component unmounts
+    return () => {
+      if (cssLinkRef.current && cssLinkRef.current.parentNode) {
+        cssLinkRef.current.parentNode.removeChild(cssLinkRef.current)
+        cssLinkRef.current = null
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (
@@ -80,7 +126,7 @@ const DsheetsRetrieveSection = () => {
   }
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4 bg-[#F8F9FA]">
       <div className="w-full max-w-[1312px] bg-white rounded-[12px]">
         <div className="flex">
           {/* Loaded state left sidebar */}
@@ -103,7 +149,6 @@ const DsheetsRetrieveSection = () => {
                         onActiveFile={() => handleNewActiveFile(index)}
                       />
                     ))}
-                  <hr />
                 </>
               )}
             </div>
@@ -191,7 +236,7 @@ const DsheetsRetrieveSection = () => {
                   </p>
                 </div>
               ) : (
-                <div>
+                <div className="p-6 overflow-y-auto h-[calc(100vh-180px)] scrollbar-hide">
                   <DsheetEditor
                     isReadOnly={true}
                     dsheetId={contentData.dsheetId}
