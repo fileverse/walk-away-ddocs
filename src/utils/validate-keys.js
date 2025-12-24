@@ -36,11 +36,12 @@ export class InvalidSourceError extends Error {
 }
 
 export const validateLegacyKey = (keysObject) => {
-  if (
-    !keysObject.source ||
-    (keysObject.source !== PROD_DDOC_DOMAIN && NETWORK_NAME === 'gnosis') ||
-    (keysObject.source !== PROD_DSHEETS_DOMAIN && NETWORK_NAME === 'gnosis')
-  ) {
+  const isGnosis = NETWORK_NAME === 'gnosis'
+  const isAllowedSource =
+    keysObject.source === PROD_DDOC_DOMAIN ||
+    keysObject.source === PROD_DSHEETS_DOMAIN
+
+  if (isGnosis && !isAllowedSource) {
     throw new InvalidSourceError('Unsupported Source')
   }
   const keys = Object.keys(keysObject)
@@ -52,11 +53,12 @@ export const validateLegacyKey = (keysObject) => {
 }
 
 export const validateNewKey = (keysObject) => {
-  if (
-    !keysObject.source ||
-    (keysObject.source !== PROD_DDOC_DOMAIN && NETWORK_NAME === 'gnosis') ||
-    (keysObject.source !== PROD_DSHEETS_DOMAIN && NETWORK_NAME === 'gnosis')
-  ) {
+  const isGnosis = NETWORK_NAME === 'gnosis'
+  const isAllowedSource =
+    keysObject.source === PROD_DDOC_DOMAIN ||
+    keysObject.source === PROD_DSHEETS_DOMAIN
+
+  if (isGnosis && !isAllowedSource) {
     throw new InvalidSourceError('Unsupported Source')
   }
   const keys = Object.keys(keysObject)
