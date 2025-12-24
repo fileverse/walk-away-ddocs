@@ -1,4 +1,8 @@
-import { NETWORK_NAME, PROD_DDOC_DOMAIN } from './constants'
+import {
+  NETWORK_NAME,
+  PROD_DDOC_DOMAIN,
+  PROD_DSHEETS_DOMAIN,
+} from './constants'
 
 export const keysInLegacySecretFile = [
   'portalAddress',
@@ -34,7 +38,8 @@ export class InvalidSourceError extends Error {
 export const validateLegacyKey = (keysObject) => {
   if (
     !keysObject.source ||
-    (keysObject.source !== PROD_DDOC_DOMAIN && NETWORK_NAME === 'gnosis')
+    (keysObject.source !== PROD_DDOC_DOMAIN && NETWORK_NAME === 'gnosis') ||
+    (keysObject.source !== PROD_DSHEETS_DOMAIN && NETWORK_NAME === 'gnosis')
   ) {
     throw new InvalidSourceError('Unsupported Source')
   }
@@ -49,7 +54,8 @@ export const validateLegacyKey = (keysObject) => {
 export const validateNewKey = (keysObject) => {
   if (
     !keysObject.source ||
-    (keysObject.source !== PROD_DDOC_DOMAIN && NETWORK_NAME === 'gnosis')
+    (keysObject.source !== PROD_DDOC_DOMAIN && NETWORK_NAME === 'gnosis') ||
+    (keysObject.source !== PROD_DSHEETS_DOMAIN && NETWORK_NAME === 'gnosis')
   ) {
     throw new InvalidSourceError('Unsupported Source')
   }

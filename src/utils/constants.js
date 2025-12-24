@@ -22,3 +22,4 @@ export const publicClient = createPublicClient({
   },
 })
 export const PROD_DDOC_DOMAIN = 'docs.fileverse.io'
+export const PROD_DSHEETS_DOMAIN = 'sheets.fileverse.io'
