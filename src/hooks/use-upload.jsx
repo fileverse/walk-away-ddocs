@@ -105,6 +105,7 @@ const useUpload = () => {
           legacyOwnerPrivateKey: legacyOwnerPrivateKey,
           newPortalAddress: newPortalAddress,
           newOwnerPrivateKey: newBackupKeys.appDecryptionKey,
+          source: oldBackupKeys.source || newBackupKeys.source,
         })
         setUploadState('uploaded')
       } catch (err) {
