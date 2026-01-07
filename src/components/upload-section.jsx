@@ -6,9 +6,13 @@ import {
 } from '../assets/icons'
 import { useState } from 'react'
 import useUpload from '../hooks/use-upload'
+import { Modal } from './modal'
+import { SettingsModalContent } from './settings-modal-content'
+import { SettingsIcon } from '../assets/icons'
 
 const UploadSection = () => {
   const [showKeyHelp, setShowKeyHelp] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   const {
     uploadState,
@@ -96,14 +100,21 @@ const UploadSection = () => {
     <div className="mb-[40px]">
       <div className="px-0 py-10 max-w-[960px] bg-white rounded-xl">
         <div className="py-0 px-6">
-          <h2 className="font-medium text-sm leading-5 text-[#363B3F] mb-3">
-            Upload your Backup Keys
-          </h2>
-
+          <div className="w-full flex items-center justify-between">
+            <h2 className="font-medium text-sm leading-5 text-[#363B3F] mb-3">
+              Upload your Backup Keys
+            </h2>
+            <button
+              onClick={() => setShowModal(true)}
+              className="font-medium text-sm leading-5 cursor-pointer flex items-center gap-2"
+            >
+              <SettingsIcon />
+              <span className="text-sm leading-5 text-[#363B3F]">Settings</span>
+            </button>
+          </div>
           <div
-            className={`border-[1px] border-dashed ${
-              dragActive ? 'border-blue-500 bg-blue-50' : 'border-[#E8EBEC]'
-            } 
+            className={`border-[1px] border-dashed ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-[#E8EBEC]'
+              } 
                   rounded font-normal text-sm leading-5 text-[#A1AAB1] p-8 text-center mb-4`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -187,16 +198,22 @@ const UploadSection = () => {
           </div>
           <button
             className={`p-4 mt-4 w-full rounded font-medium text-[14px] leading-[20px] cursor-pointer
-                  ${
-                    file && uploadState === 'uploaded'
-                      ? 'bg-[#FFDF0A] text-black hover:bg-[#EFC703]'
-                      : 'bg-[#E8EBEC] text-[#A1AAB1]'
-                  }`}
+                  ${file && uploadState === 'uploaded'
+                ? 'bg-[#FFDF0A] text-black hover:bg-[#EFC703]'
+                : 'bg-[#E8EBEC] text-[#A1AAB1]'
+              }`}
             disabled={!file || uploadState !== 'uploaded'}
             onClick={handleRetrieveClick}
           >
             Retrieve documents
           </button>
+          <Modal
+            open={showModal}
+            onClose={() => setShowModal(false)}
+            title="Settings"
+          >
+            <SettingsModalContent setShowModal={setShowModal} />
+          </Modal>
         </div>
       </div>
     </div>
