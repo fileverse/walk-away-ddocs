@@ -93,6 +93,7 @@ export const SettingsModalContent = ({ setShowModal }) => {
             <p>
               1. Put an PRC endopint url. How to get see{' '}
               <a
+                href="https://www.alchemy.com/rpc/gnosis"
                 target="_blank"
                 className="text-[#5C0AFF] cursor-pointer hover:underline"
               >
