@@ -36,9 +36,11 @@ export const sequentialFetch = async (urls) => {
 
 export const fetchFromIPFS = async (hash) => {
   try {
-    const gatewayUrls = import.meta.env.VITE_PUBLIC_IPFS_GATEWAY_URLS?.split(
-      ', '
-    )
+    const gatewayUrls =
+      JSON.parse(
+        localStorage.getItem('fileverse-walkaway-settings')
+      )?.pinataGateway?.split(',') ||
+      import.meta.env.VITE_PUBLIC_IPFS_GATEWAY_URLS?.split(', ')
     if (!gatewayUrls) return
 
     const response = await sequentialFetch(
