@@ -11,7 +11,7 @@ export const NETWORK_NAME = import.meta.env.VITE_NETWORK_NAME
 export const RPC_URL =
   JSON.parse(
     localStorage.getItem('fileverse-walkaway-settings')
-  )?.rpcEndpoint?.split(', ') || import.meta.env.VITE_NETWORK_RPC?.split(', ')
+  )?.rpcEndpoint?.split(',') || import.meta.env.VITE_NETWORK_RPC?.split(', ')
 
 export const CHAIN = VIEM_CHAIN_MAP[NETWORK_NAME]
 

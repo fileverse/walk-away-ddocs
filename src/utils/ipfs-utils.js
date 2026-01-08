@@ -39,7 +39,7 @@ export const fetchFromIPFS = async (hash) => {
     const gatewayUrls =
       JSON.parse(
         localStorage.getItem('fileverse-walkaway-settings')
-      )?.pinataGateway?.split(', ') ||
+      )?.pinataGateway?.split(',') ||
       import.meta.env.VITE_PUBLIC_IPFS_GATEWAY_URLS?.split(', ')
     if (!gatewayUrls) return
 
