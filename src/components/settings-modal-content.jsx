@@ -12,7 +12,7 @@ export const SettingsModalContent = ({ setShowModal }) => {
   const [showHowToConfigure, setShowHowToConfigure] = useState(false)
 
   const handleSettingsChange = (e) => {
-    setSettings({ ...settings, [e.target.name]: e.target.value })
+    setSettings({ ...settings, [e.target.name]: e.target.value.trim() })
   }
 
   const handleResetToDefault = () => {
