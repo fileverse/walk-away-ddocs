@@ -1,4 +1,4 @@
-# Walk away ddocs
+# Walkaway
 This repo contains the code to independently recover all documents tied to your dDocs account using your back up key, in case the main [dDocs app](https://ddocs.new/) is down. Easily control your documents end-to-end without depending on centralized servers 💛
 
 ## Prerequiste
