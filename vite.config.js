@@ -25,6 +25,9 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
+  build: {
+    commonjsOptions: { transformMixedEsModules: true },
+  },
   optimizeDeps: {
     exclude: ['@transcend-io/penumbra'], // Ensure it's included
   },
