@@ -1,7 +1,7 @@
 import { withRetry, fetchFromIPFS, FAILED_IPFS_FETCH_ERROR } from './ipfs-utils'
 import { toUint8Array } from 'js-base64'
 import { Buffer } from 'buffer'
-import { setPenumbraWorkerLocation, getPenumbra } from './crypto'
+import { penumbra } from '@transcend-io/penumbra'
 
 export const fetchNewFileResponse = async (contentIpfsHash) => {
   const fetchedResponse = await withRetry(
@@ -61,13 +61,7 @@ export const decryptNewFile = async (fileKey, response) => {
       size: encryptedData.length,
     }
 
-    await setPenumbraWorkerLocation()
-    const penumbra = getPenumbra()
-    if (!penumbra) {
-      throw new Error('Penumbra is not initialized')
-    }
-
-    const [decryptedFileContent] = await penumbra.decrypt(
+    const decryptedFileContent = await penumbra.decrypt(
       decryptionInfo,
       penumbraEncryptedFile
     )

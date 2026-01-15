@@ -2,7 +2,7 @@ import { toUint8Array } from 'js-base64'
 import tweetnacl from 'tweetnacl'
 import { FAILED_IPFS_FETCH_ERROR, fetchFromIPFS, withRetry } from './ipfs-utils'
 
-import * as penumbraLib from '@transcend-io/penumbra'
+import { penumbra } from '@transcend-io/penumbra'
 
 export const decryptLegacyFile = async (decryptionInfo, contentIpfsHash) => {
   const fetchedResponse = await withRetry(
@@ -16,20 +16,6 @@ export const decryptLegacyFile = async (decryptionInfo, contentIpfsHash) => {
   return penumbraDecryptFile(decryptionInfo, fetchedResponse)
 }
 
-export const getPenumbra = () => window?.penumbra || penumbraLib
-
-export const setPenumbraWorkerLocation = async () => {
-  const penumbra = getPenumbra()
-
-  if (penumbra) {
-    //@ts-ignore
-    if (window.penumbraInitialised) return
-    await penumbra.setWorkerLocation('/worker.penumbra.js')
-    //@ts-ignore
-    window.penumbraInitialised = true
-  }
-}
-
 export const penumbraDecryptFile = async (decryptionInfo, response) => {
   if (!response.body) throw new Error(FAILED_IPFS_FETCH_ERROR)
   const penumbraEncryptedFile = {
@@ -38,12 +24,10 @@ export const penumbraDecryptFile = async (decryptionInfo, response) => {
     size: Number(response.headers.get('Content-Length') || 0),
   }
 
-  await setPenumbraWorkerLocation()
-
-  const penumbra = getPenumbra()
-  const decryptedFileContent = (
-    await penumbra.decrypt(decryptionInfo, penumbraEncryptedFile)
-  )[0]
+  const decryptedFileContent = await penumbra.decrypt(
+    decryptionInfo,
+    penumbraEncryptedFile
+  )
 
   const contentBlob = await penumbra.getBlob(decryptedFileContent)
   const contentText = await contentBlob.text()
