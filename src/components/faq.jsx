@@ -37,9 +37,9 @@ const agentFaqs = [
     answer: (
       <>
         This powerful static page lets you retrieve all your dDocs (PDFs or .MD)
-        and dSheets, ensuring you always have access to your
-        content, no matter what happens to the Fileverse team or Apps. Just
-        upload your Backup Keys to download all your files.
+        and dSheets, ensuring you always have access to your content, no matter
+        what happens to the Fileverse team or Apps. Just upload your Backup Keys
+        to download all your files.
       </>
     ),
   },
@@ -47,14 +47,36 @@ const agentFaqs = [
     question: 'What are the advantages of a static page?',
     answer: (
       <>
-        This static page grants you greater agency over your files management.A
-        static page minimizes the amount of server-side processing, allows you
-        to download the whole page, modify it and use it offline in complete
-        privacy. <br />
+        This static page grants you greater agency over your files management. A
+        static page minimizes the amount of server-side processing, allowing you
+        to download the whole page, modify it, use it offline in complete
+        privacy, and configure your own infra (RPC endpoint and IPFS gateways)
+        to eliminate all third-party dependencies. <br />
         <br />
         The static page is also hosted and accessible via any public IPFS
-        gateway from which you can download it and in so doing improve the
-        censorship-resistance of your documents & spreadsheets.
+        gateway from which you can download it, improving the
+        censorship-resistance of your documents & spreadsheets. It is
+        additionally accessible via its verifiable ENS domain using the{' '}
+        <a
+          href="https://walkaway.fileverse.eth.limo/"
+          target="_blank"
+          className="text-[#5C0AFF] hover:underline"
+        >
+          eth.limo
+        </a>{' '}
+        gateway, or over Tor hidden service via our{' '}
+        <a
+          href="http://dzarjqakfkvzv2rzdidap6opdaohsawvn3slqbozqfd3ltc5kvealvyd.onion/"
+          target="_blank"
+          className="text-[#5C0AFF] hover:underline"
+        >
+          .onion
+        </a>{' '}
+        address.
+        <br />
+        <br />
+        This is the walkaway test in practice: the page works independently of
+        Fileverse.
       </>
     ),
   },
