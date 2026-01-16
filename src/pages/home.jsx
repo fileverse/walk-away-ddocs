@@ -49,11 +49,23 @@ const HomePage = () => {
           </p>
 
           <p className="mt-5 text-[#77818a] text-base font-normal leading-normal">
-            Unlike big-tech platforms that can access your data, censor it, or
-            arbitrarily revoke your account, dDocs and dSheets takes steps to
-            offer you self-sovereignty. This static page is designed to make it
-            easy for you to control your documents and spreadsheets end-to-end
-            without depending on centralized servers 💛
+            Unlike big tech platforms that can access your data, censor it, or
+            arbitrarily revoke your account, dDocs and dSheets take steps to
+            offer you self-sovereignty by default. This{' '}
+            <a
+              href="https://walkaway.fileverse.eth.limo/"
+              target="_blank"
+              className="text-[#5C0AFF] hover:underline"
+            >
+              static page
+            </a>{' '}
+            is designed to make it easy for you to retrieve your documents and
+            spreadsheets end-to-end without depending on centralized servers or
+            the team behind Fileverse.
+          </p>
+          <p className="mt-5 text-[#77818a] text-base font-normal leading-normal">
+            Built on Ethereum-aligned infrastructure, this page does not rely on
+            Fileverse to function.
           </p>
         </div>
 

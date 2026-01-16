@@ -8,11 +8,24 @@ const OpenSource = () => {
         Open source
       </div>
       <div className="self-stretch text-[#363b3f] text-sm sm:text-base font-normal font-['Helvetica Neue'] leading-normal">
-        Don't trust, verify! This static page is open-source, meaning that you
-        can check the code, modify it, and even host this page on your own. We
-        recommend downloading the page and self-hosting it if you want a
-        complete self-sovereign experience with increased privacy and
-        censorship-resistance.
+        <p className="mt-5 text-[#77818a] text-base font-normal leading-normal">
+          Don't trust, verify. This static page is open-source, you can check
+          the code, modify it, and even host this page on your own. You can even
+          configure your own RPC endpoint and IPFS gateways. Here’s also the{' '}
+          <a
+            href="https://github.com/fileverse/walk-away-ddocs"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            .onion
+          </a>{' '}
+          root!
+        </p>
+        <p className="mt-5 text-[#77818a] text-base font-normal leading-normal">
+          We recommend downloading the page and self-hosting it if you want a
+          complete self-sovereign experience, minimizing trust assumptions while
+          increasing privacy and censorship resistance.
+        </p>
       </div>
       <div className="relative group"></div>
       <a
