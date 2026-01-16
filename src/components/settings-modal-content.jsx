@@ -57,7 +57,7 @@ export const SettingsModalContent = ({ setShowModal }) => {
         <input
           type="text"
           className="text-[14px] w-full py-2 px-3 border border-[#E8EBEC] rounded-[4px] placeholder:text-[#77818A]"
-          placeholder="https://api.mainnet.solana.com"
+          placeholder="https://rpc.gnosischain.com"
           value={settings.rpcEndpoint}
           name="rpcEndpoint"
           onChange={handleSettingsChange}
