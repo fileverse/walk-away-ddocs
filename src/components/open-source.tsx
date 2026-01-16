@@ -13,7 +13,7 @@ const OpenSource = () => {
           the code, modify it, and even host this page on your own. You can even
           configure your own RPC endpoint and IPFS gateways. Here’s also the{' '}
           <a
-            href="https://github.com/fileverse/walk-away-ddocs"
+            href="http://dzarjqakfkvzv2rzdidap6opdaohsawvn3slqbozqfd3ltc5kvealvyd.onion/"
             target="_blank"
             rel="noopener noreferrer"
           >
