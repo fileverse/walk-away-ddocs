@@ -1,13 +1,14 @@
 {
-    "headers": [
-      {
-        "source": "/(.*).html",
-        "headers": [
-          {
-            "key": "Onion-Location",
-            "value": "http://dzarjqakfkvzv2rzdidap6opdaohsawvn3slqbozqfd3ltc5kvealvyd.onion"
-          }
-        ]
-      }
-    ]
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/:path*",
+      "headers": [
+        {
+          "key": "Onion-Location",
+          "value": "http://dzarjqakfkvzv2rzdidap6opdaohsawvn3slqbozqfd3ltc5kvealvyd.onion"
+        }
+      ]
+    }
+  ]
+}
