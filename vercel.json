@@ -1,0 +1,13 @@
+{
+    "headers": [
+      {
+        "source": "/(.*).html",
+        "headers": [
+          {
+            "key": "Onion-Location",
+            "value": "http://dzarjqakfkvzv2rzdidap6opdaohsawvn3slqbozqfd3ltc5kvealvyd.onion"
+          }
+        ]
+      }
+    ]
+  }
