@@ -102,8 +102,8 @@ const agentFaqs = [
           dsheets.new
         </a>{' '}
         ensure you can always access your documents and spreadsheets. This
-        backup page guarantees your content can be retrieved and stay stay in
-        your hands, no matter what happens to the main front-ends of the apps.
+        backup page guarantees your content can be retrieved and stay in your
+        hands, no matter what happens to the main front-ends of the apps.
       </>
     ),
   },
