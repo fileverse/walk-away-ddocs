@@ -2,7 +2,16 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
-      "source": "/:path*",
+      "source": "/",
+      "headers": [
+        {
+          "key": "Onion-Location",
+          "value": "http://dzarjqakfkvzv2rzdidap6opdaohsawvn3slqbozqfd3ltc5kvealvyd.onion"
+        }
+      ]
+    },
+    {
+      "source": "/(.+)",
       "headers": [
         {
           "key": "Onion-Location",
