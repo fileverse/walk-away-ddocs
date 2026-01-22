@@ -38,7 +38,7 @@ function isNewBackupKeys(value) {
 
 export function splitBackupKeys(data) {
   let oldBackupKeys = {}
-  let newBackupKeys = {}
+  let newBackupKeys = []
 
   //Just old backup keys (before Privacy Upgrade)
   if (
@@ -56,28 +56,42 @@ export function splitBackupKeys(data) {
     data.memberPublicKey === '' &&
     data.memberPrivateKey === ''
   ) {
-    newBackupKeys = {
-      portalAddress: data.portalAddress,
-      appEncryptionKey: data.ownerPublicKey,
-      appDecryptionKey: data.ownerPrivateKey,
-      source: data.source,
-    }
+    newBackupKeys = [
+      {
+        portalAddress: data.portalAddress,
+        appEncryptionKey: data.ownerPublicKey,
+        appDecryptionKey: data.ownerPrivateKey,
+        source: data.source,
+      },
+    ]
     return { oldBackupKeys, newBackupKeys }
   }
 
   //Just new backup keys (after Walk Away page v2 and after Privacy Upgrade)
   if (isNewBackupKeys(data)) {
-    newBackupKeys = data
+    newBackupKeys = [data]
     return { oldBackupKeys, newBackupKeys }
   }
 
   // Mixed backup keys (after Walk Away page v2 and after Privacy Upgrade and has both old and new backup keys)
+  // Also handles multiple new backup keys
   if (data && typeof data === 'object') {
     for (const value of Object.values(data)) {
       if (isOldBackupKeys(value)) {
         oldBackupKeys = value
       } else if (isNewBackupKeys(value)) {
-        newBackupKeys = value
+        newBackupKeys.push(value)
+      } else if (
+        isNewBackupKeysFormat(value) &&
+        value.memberPublicKey === '' &&
+        value.memberPrivateKey === ''
+      ) {
+        newBackupKeys.push({
+          portalAddress: value.portalAddress,
+          appEncryptionKey: value.ownerPublicKey,
+          appDecryptionKey: value.ownerPrivateKey,
+          source: value.source,
+        })
       }
     }
   }
