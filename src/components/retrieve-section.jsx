@@ -9,9 +9,10 @@ import { getIPFSAsset } from '../utils/ipfs-utils'
 import {
   getLegacyContractFile,
   getNewContractFile,
+  getNewPortalFileCount,
 } from '../utils/contract-functions'
 import { usePortalProvider } from '../providers/portal-provider'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { PreviewDdocEditor, handleContentPrint } from '@fileverse-dev/ddoc'
 import { eciesDecrypt } from '@fileverse/crypto/ecies'
 import { toBytes } from '@fileverse/crypto/utils'
@@ -39,6 +40,7 @@ const RetrieveSection = () => {
   const { portalInformation } = usePortalProvider()
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState('')
+  const [portalFileCounts, setPortalFileCounts] = useState([])
 
   const [content, setContent] = useState('')
   const [contentData, setContentData] = useState({
@@ -57,6 +59,26 @@ const RetrieveSection = () => {
       navigate('/')
     }
   }, [portalInformation])
+
+  // Fetch file counts for all new portal addresses
+  useEffect(() => {
+    const fetchPortalFileCounts = async () => {
+      if (
+        portalInformation.newPortalAddresses &&
+        portalInformation.newPortalAddresses.length > 0
+      ) {
+        const counts = await Promise.all(
+          portalInformation.newPortalAddresses.map(async (address) => {
+            const fileCount = await getNewPortalFileCount(address)
+            return { address, fileCount }
+          })
+        )
+        setPortalFileCounts(counts)
+      }
+    }
+
+    fetchPortalFileCounts()
+  }, [portalInformation.newPortalAddresses])
 
   const fetchContent = async (contentData) => {
     //new decryption logic after Privacy Upgrade
@@ -138,26 +160,32 @@ const RetrieveSection = () => {
           {/* Loaded state left sidebar */}
           <div className="flex flex-col items-start border-r border-gray-200 p-4 h-[calc(100vh-120px)] overflow-y-auto">
             <div className="w-[280px] flex flex-col gap-2 pt-2">
-              {portalInformation.newFileCount > 0 && (
-                <>
-                  <p>New Portal</p>
-                  <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
-                    Documents: {newActiveFiles.size}
-                  </div>
-                  {Array(portalInformation.newFileCount)
-                    .fill(0)
-                    .map((_, index) => (
-                      <NewDdocFile
-                        key={index}
-                        fileId={index}
-                        contentData={contentData}
-                        setContentData={setContentData}
-                        onActiveFile={() => handleNewActiveFile(index)}
-                      />
-                    ))}
-                  <hr />
-                </>
-              )}
+              {portalInformation.newFileCount > 0 &&
+                portalFileCounts.length > 0 && (
+                  <>
+                    <p>New Portal</p>
+                    <div className="text-[12px] leading-[16px] font-normal text-[#77818A]">
+                      Documents: {newActiveFiles.size}
+                    </div>
+                    {portalFileCounts.map(({ address, fileCount }) =>
+                      Array(fileCount)
+                        .fill(0)
+                        .map((_, index) => (
+                          <NewDdocFile
+                            key={`${address}-${index}`}
+                            fileId={index}
+                            portalAddress={address}
+                            contentData={contentData}
+                            setContentData={setContentData}
+                            onActiveFile={() =>
+                              handleNewActiveFile(`${address}-${index}`)
+                            }
+                          />
+                        ))
+                    )}
+                    <hr />
+                  </>
+                )}
 
               {portalInformation.legacyFileCount > 0 && (
                 <>
@@ -374,12 +402,15 @@ export const LegacyDdocFile = ({
 
 export const NewDdocFile = ({
   fileId,
+  portalAddress: propPortalAddress,
   setContentData,
   contentData,
   onActiveFile,
 }) => {
   const { portalInformation } = usePortalProvider()
-  const { newPortalAddress } = portalInformation
+  const { portalAddress: urlPortalAddress } = useParams()
+  // Use prop portalAddress if provided, otherwise fall back to URL portalAddress
+  const portalAddress = propPortalAddress || urlPortalAddress
   const [title, setDocTitle] = useState('')
   const [data, setData] = useState()
   const [hasCalledActiveFile, setHasCalledActiveFile] = useState(false)
@@ -391,7 +422,7 @@ export const NewDdocFile = ({
 
   const loadFileDetails = async () => {
     try {
-      const details = await getNewContractFile(fileId, newPortalAddress)
+      const details = await getNewContractFile(fileId, portalAddress)
       const metadataIPFSHash = details[2]
       const contentIPFSHash = details[3]
       const gateIPFSHash = details[4] || ''
