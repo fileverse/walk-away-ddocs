@@ -7,7 +7,7 @@ const PortalProviderContext = createContext({
     newFileCount: 0,
     legacyPortalAddress: '',
     legacyOwnerPrivateKey: '',
-    newPortalAddress: '',
+    newPortalAddresses: [],
     newOwnerPrivateKey: '',
     source: '',
   },
@@ -21,7 +21,7 @@ const PortalProvider = ({ children }) => {
     newFileCount: 0,
     legacyPortalAddress: '',
     legacyOwnerPrivateKey: '',
-    newPortalAddress: '',
+    newPortalAddresses: [],
     newOwnerPrivateKey: '',
     source: '',
   })

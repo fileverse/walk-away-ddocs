@@ -69,18 +69,32 @@ export const validateNewKey = (keysObject) => {
   })
 }
 
-export const validateKey = (legacyKeysObject, newKeysObject) => {
+export const validateKey = (legacyKeysObject, newKeysArray) => {
   const oldKeys = Object.keys(legacyKeysObject)
-  const newKeys = Object.keys(newKeysObject)
+  const newKeysCount = Array.isArray(newKeysArray) ? newKeysArray.length : 0
 
-  if (newKeys.length === 0) {
+  if (newKeysCount === 0) {
     validateLegacyKey(legacyKeysObject)
   }
   if (oldKeys.length === 0) {
-    validateNewKey(newKeysObject)
+    // Validate all new keys in the array
+    if (Array.isArray(newKeysArray)) {
+      newKeysArray.forEach((newKey) => {
+        validateNewKey(newKey)
+      })
+    } else {
+      validateNewKey(newKeysArray)
+    }
   }
-  if (oldKeys.length > 0 && newKeys.length > 0) {
+  if (oldKeys.length > 0 && newKeysCount > 0) {
     validateLegacyKey(legacyKeysObject)
-    validateNewKey(newKeysObject)
+    // Validate all new keys in the array
+    if (Array.isArray(newKeysArray)) {
+      newKeysArray.forEach((newKey) => {
+        validateNewKey(newKey)
+      })
+    } else {
+      validateNewKey(newKeysArray)
+    }
   }
 }

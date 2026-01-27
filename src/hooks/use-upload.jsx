@@ -31,8 +31,8 @@ const useUpload = () => {
     }
   }, [])
 
-  const verifyKeys = async (oldBackupKeys, newBackupKeys) => {
-    let newPortalAddress = null
+  const verifyKeys = async (oldBackupKeys, newBackupKeysArray) => {
+    let newPortalAddresses = []
     let newKeysVerified = false
     let legacyKeysVerified = false
     let legacyPortalAddress = null
@@ -53,22 +53,54 @@ const useUpload = () => {
       }
     }
 
-    if (Object.keys(newBackupKeys).length > 0) {
+    if (Array.isArray(newBackupKeysArray) && newBackupKeysArray.length > 0) {
+      // Verify all new backup keys
+      const verificationResults = await Promise.all(
+        newBackupKeysArray.map(async (newBackupKeys) => {
+          const { portalAddress, newKeysVerified: newKeysVerifiedResult } =
+            await verifyNewKeys(newBackupKeys)
+          return {
+            portalAddress,
+            newKeysVerified: newKeysVerifiedResult,
+          }
+        })
+      )
+
+      // Check if all keys are verified
+      const allVerified = verificationResults.every(
+        (result) => result.newKeysVerified
+      )
+
+      if (!allVerified) {
+        setUploadState('incorrect')
+        return
+      }
+
+      newKeysVerified = true
+      newPortalAddresses = verificationResults.map(
+        (result) => result.portalAddress
+      )
+    } else if (
+      newBackupKeysArray &&
+      Object.keys(newBackupKeysArray).length > 0
+    ) {
+      // Backward compatibility: handle single new backup keys object
       const { portalAddress, newKeysVerified: newKeysVerifiedResult } =
-        await verifyNewKeys(newBackupKeys)
-      newPortalAddress = portalAddress
+        await verifyNewKeys(newBackupKeysArray)
       newKeysVerified = newKeysVerifiedResult
 
       if (!newKeysVerified) {
         setUploadState('incorrect')
         return
       }
+
+      newPortalAddresses = [portalAddress]
     }
 
     return {
       legacyPortalAddress,
       legacyOwnerPrivateKey,
-      newPortalAddress,
+      newPortalAddresses,
       newKeysVerified,
     }
   }
@@ -87,25 +119,43 @@ const useUpload = () => {
         validateKey(oldBackupKeys, newBackupKeys)
 
         // Verify keys from the backup file using on-chain contract verification
-        const { legacyPortalAddress, legacyOwnerPrivateKey, newPortalAddress } =
-          await verifyKeys(oldBackupKeys, newBackupKeys)
+        const {
+          legacyPortalAddress,
+          legacyOwnerPrivateKey,
+          newPortalAddresses,
+        } = await verifyKeys(oldBackupKeys, newBackupKeys)
 
         if (legacyPortalAddress) {
           legacyFileCount = await getLegacyPortalFileCount(legacyPortalAddress)
         }
 
-        if (newPortalAddress) {
-          newFileCount = await getNewPortalFileCount(newPortalAddress)
+        // Get file count for all new portal addresses
+        if (newPortalAddresses && newPortalAddresses.length > 0) {
+          const fileCounts = await Promise.all(
+            newPortalAddresses.map((address) => getNewPortalFileCount(address))
+          )
+          newFileCount = fileCounts.reduce((sum, count) => sum + count, 0)
         }
+
+        // Get the first new backup key's appDecryptionKey for backward compatibility
+        const firstNewBackupKey =
+          Array.isArray(newBackupKeys) && newBackupKeys.length > 0
+            ? newBackupKeys[0]
+            : newBackupKeys
+        const source =
+          oldBackupKeys.source ||
+          (Array.isArray(newBackupKeys) && newBackupKeys.length > 0
+            ? newBackupKeys[0].source
+            : newBackupKeys?.source)
 
         setPortalInformation({
           legacyFileCount,
           newFileCount,
           legacyPortalAddress: legacyPortalAddress,
           legacyOwnerPrivateKey: legacyOwnerPrivateKey,
-          newPortalAddress: newPortalAddress,
-          newOwnerPrivateKey: newBackupKeys.appDecryptionKey,
-          source: oldBackupKeys.source || newBackupKeys.source,
+          newPortalAddresses: newPortalAddresses || [],
+          newOwnerPrivateKey: firstNewBackupKey?.appDecryptionKey || '',
+          source: source || '',
         })
         setUploadState('uploaded')
       } catch (err) {
@@ -158,8 +208,12 @@ const useUpload = () => {
     if (file && uploadState === 'uploaded') {
       if (portalInformation.legacyPortalAddress) {
         navigate('/' + portalInformation.legacyPortalAddress + '/retrieve')
-      } else if (portalInformation.newPortalAddress) {
-        navigate('/' + portalInformation.newPortalAddress + '/retrieve')
+      } else if (
+        portalInformation.newPortalAddresses &&
+        portalInformation.newPortalAddresses.length > 0
+      ) {
+        // Navigate to the first new portal address
+        navigate('/' + portalInformation.newPortalAddresses[0] + '/retrieve')
       }
     }
   }
